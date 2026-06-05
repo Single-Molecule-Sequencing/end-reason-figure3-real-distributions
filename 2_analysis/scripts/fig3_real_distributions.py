@@ -47,8 +47,8 @@ FOCUS_CLASSES = [
 
 CLASS_LABELS = {
     "signal_positive": "Signal positive",
-    "unblock_mux_change": "Unblock/MUX change",
-    "mux_change": "MUX change",
+    "unblock_mux_change": "Unblock mux change",
+    "mux_change": "Mux change",
     "signal_negative": "Signal negative",
 }
 
