@@ -15,13 +15,13 @@ as it will appear in the paper, and the figure legend text.
 ## What Figure 3 shows
 
 Figure 3 validates that POD5-derived `end_reason` annotations reliably separate
-physically concordant from discordant reads. Across three proof-of-principle
-restriction-digest cohorts (Eco53KI, RC Eco53KI+PvuII, cutting-resistant E),
-`signal_positive` reads produce read-length distributions that match the known
-physical fragment sizes, while non-`signal_positive` reads do not. Crucially,
-Q-score filtering at Q10 does not rescue this: non-`signal_positive` reads survive
-quality filtering, demonstrating that end-reason filtering is necessary and
-complementary to quality filtering.
+physically concordant from discordant reads. Using the Cutting-resistant E
+Regular run (`20250519_1041_MN48328_AYJ384_c3faa658`), `signal_positive` reads
+produce a read-length distribution that matches the known physical fragment sizes,
+while non-`signal_positive` reads do not. Crucially, Q-score filtering at Q10
+does not rescue this: non-`signal_positive` reads survive quality filtering,
+demonstrating that end-reason filtering is necessary and complementary to quality
+filtering.
 
 ## Draft status
 

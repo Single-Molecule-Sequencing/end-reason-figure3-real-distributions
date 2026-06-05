@@ -7,10 +7,11 @@ you to read the script. Think of it as the methods section in plain language.
 
 ## Goal
 
-Produce Figure 3: a 3-row × 3-column panel grid where each row is one
-proof-of-principle cohort and each column is one panel type:
+Produce Figure 3: read-length KDE and Q-score KDE panels stratified by
+`end_reason` for the Cutting-resistant E Regular run
+(`20250519_1041_MN48328_AYJ384_c3faa658`):
 
-| Column | Content |
+| Panel | Content |
 |---|---|
 | Left | Read-length KDE by `end_reason` (log-scaled bp x-axis; dashed vertical lines for expected physical peak centers) |
 | Middle | Q-score KDE by `end_reason` (Q10 threshold reference line) |
@@ -28,9 +29,9 @@ filtering, which is the main motivation for end-reason filtering.
 ### Step 1 — Read end reasons from POD5
 
 The `pod5` Python API exposes an `end_reason` field per read in the POD5
-acquisition file. We read these directly using `pod5.Reader` → `read_table`.
-This bypasses any downstream basecaller annotation and gives us the ground-truth
-sequencer-assigned end reason.
+acquisition file. We read these directly from the Cutting-resistant E Regular
+run directory using `pod5.Reader` → `read_table`. This gives us the
+ground-truth sequencer-assigned end reason without any downstream annotation.
 
 ### Step 2 — Join read length and Q-score from sequencing_summary
 

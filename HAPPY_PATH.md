@@ -19,12 +19,9 @@ scratch. Follow these steps in order. Each step links to the relevant files.
 ## Step 1 — Confirm the raw data is accessible
 
 ```bash
-# Should list POD5 files for each cohort
-ls /nfs/turbo/umms-atheylab/gregfar/SMS/SMS_POP_data/
+# Should list the POD5 files for the run
+ls /nfs/turbo/umms-atheylab/gregfar/SMS/SMS_POP_data/Single_Molecule_Seqeuncing_Cutting_Res_E/Regular/20250519_1041_MN48328_AYJ384_c3faa658/
 ```
-
-See [`1_experiment/raw_data/README.md`](1_experiment/raw_data/README.md) for
-exact paths to each cohort's POD5 directory.
 
 📂 More details: [`1_experiment/raw_data/README.md`](1_experiment/raw_data/README.md)
 

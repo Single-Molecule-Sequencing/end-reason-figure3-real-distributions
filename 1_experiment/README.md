@@ -17,16 +17,11 @@ signal to reads, and where the resulting data files live.
 
 ## What was the experiment?
 
-Figure 3 draws from **three proof-of-principle restriction-digest cohorts**,
-each sequenced on an Oxford Nanopore device:
-
-| Cohort | Description | Expected fragment sizes |
-|---|---|---|
-| **Eco53KI** | Single-species digest | Known sharp peak(s) |
-| **RC Eco53KI+PvuII** | Double-enzyme digest | Multiple defined peaks |
-| **Cutting-resistant E** | Cutting-resistant control | Longer, uncut molecules dominate |
+Figure 3 uses a **single sequencing run** from the SMS POP data collection:
+the Cutting-resistant E (Regular) run on a MinION (run ID
+`20250519_1041_MN48328_AYJ384_c3faa658`).
 
 End reasons are read directly from **POD5 acquisition files** using the pod5
-Python API. Read lengths and Q-scores are joined from **basecaller
-`sequencing_summary` files** by `read_id`. This self-contained data path (POD5 +
+Python API. Read lengths and Q-scores are joined from the **basecaller
+`sequencing_summary` file** by `read_id`. This self-contained data path (POD5 +
 sequencing_summary) requires no additional annotation step.

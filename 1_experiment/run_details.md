@@ -1,49 +1,19 @@
 # Sequencing Run Details
 
-<!-- TODO: Fill in the actual run metadata for each cohort. Fields marked [?] need to be confirmed. -->
-
-## Cohort 1 — Eco53KI (single-species)
+<!-- Fields marked [?] need to be confirmed. -->
 
 | Field | Value |
 |---|---|
-| **Run ID** | [?] |
-| **Run date** | [?] |
-| **Device** | [?] |
-| **Flow cell ID** | [?] |
+| **Run ID** | `20250519_1041_MN48328_AYJ384_c3faa658` |
+| **Run date** | 2025-05-19 |
+| **Device** | MinION (MN48328) |
+| **Flow cell ID** | AYJ384 |
 | **Kit** | [?] |
 | **MinKNOW version** | [?] |
 | **Dorado version** | [?] |
-| **Sample** | Single-species Eco53KI digest |
-| **Location on Turbo** | [?] |
-
-## Cohort 2 — RC Eco53KI+PvuII (double-enzyme)
-
-| Field | Value |
-|---|---|
-| **Run ID** | [?] |
-| **Run date** | [?] |
-| **Device** | [?] |
-| **Flow cell ID** | [?] |
-| **Kit** | [?] |
-| **MinKNOW version** | [?] |
-| **Dorado version** | [?] |
-| **Sample** | RC Eco53KI+PvuII double-enzyme digest |
-| **Location on Turbo** | [?] |
-
-## Cohort 3 — Cutting-resistant E
-
-| Field | Value |
-|---|---|
-| **Run ID** | [?] |
-| **Run date** | [?] |
-| **Device** | [?] |
-| **Flow cell ID** | [?] |
-| **Kit** | [?] |
-| **MinKNOW version** | [?] |
-| **Dorado version** | [?] |
-| **Sample** | Cutting-resistant E (uncut control) |
-| **Location on Turbo** | [?] |
+| **Sample** | SMS POP data — Single Molecule Sequencing Cutting Res E (Regular) |
+| **Location on Turbo** | `/nfs/turbo/umms-atheylab/gregfar/SMS/SMS_POP_data/Single_Molecule_Seqeuncing_Cutting_Res_E/Regular/20250519_1041_MN48328_AYJ384_c3faa658` |
 
 ## Notes
 
-<!-- Add any relevant notes about the runs -->
+<!-- Add any relevant notes about the run (e.g., pore health, unusual events, restarts) -->

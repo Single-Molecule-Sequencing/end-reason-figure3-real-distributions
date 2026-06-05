@@ -15,8 +15,9 @@ plain-English explanations of what the code does and how to run it.
 
 ## One-line summary
 
-The analysis reads end reasons from POD5 acquisition files, joins read lengths
-and Q-scores from `sequencing_summary` files by `read_id`, then plots read-length
-KDEs and Q-score KDEs stratified by `end_reason` for each of the three
-proof-of-principle cohorts, with dashed vertical lines marking expected physical
-fragment-size peaks inferred from the `signal_positive` trough-bounded peak workflow.
+The analysis reads end reasons from the POD5 acquisition files for the
+Cutting-resistant E Regular run, joins read lengths and Q-scores from the
+`sequencing_summary` file by `read_id`, then plots read-length KDEs and
+Q-score KDEs stratified by `end_reason`, with dashed vertical lines marking
+expected physical fragment-size peaks inferred from the `signal_positive`
+trough-bounded peak workflow.

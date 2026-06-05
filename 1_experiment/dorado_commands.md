@@ -1,8 +1,7 @@
 # Dorado Basecalling Commands
 
-These are the **exact commands** used to basecall the raw signal data into reads
-for each cohort. Copy-paste these to reproduce the `sequencing_summary` files
-from the raw POD5 inputs.
+These are the **exact commands** used to basecall the raw signal data into reads.
+Copy-paste these to reproduce the `sequencing_summary` file from the raw POD5 input.
 
 ---
 
@@ -18,7 +17,7 @@ dorado --version
 
 ---
 
-## Cohort 1 — Eco53KI
+## Basecalling command
 
 <!-- TODO: Fill in the actual dorado command. -->
 
@@ -26,53 +25,17 @@ dorado --version
 # [PLACEHOLDER — replace with the actual command]
 dorado basecaller \
     <model> \
-    <path/to/eco53ki/pod5/> \
+    /nfs/turbo/umms-atheylab/gregfar/SMS/SMS_POP_data/Single_Molecule_Seqeuncing_Cutting_Res_E/Regular/20250519_1041_MN48328_AYJ384_c3faa658/ \
     --reference <reference.fa> \
-    > eco53ki_basecalled.bam
+    > basecalled.bam
 ```
 
-**Model used:** [?]  
+**Model used:** [?] (e.g., `dna_r10.4.1_e8.2_400bps_sup@v4.3.0`)  
 **Reference:** [?]  
 **Output:** see [`basecalled_data/`](basecalled_data/README.md)
 
 ---
 
-## Cohort 2 — RC Eco53KI+PvuII
-
-<!-- TODO: Fill in the actual dorado command. -->
-
-```bash
-# [PLACEHOLDER — replace with the actual command]
-dorado basecaller \
-    <model> \
-    <path/to/rc_eco53ki_pvuii/pod5/> \
-    --reference <reference.fa> \
-    > rc_eco53ki_pvuii_basecalled.bam
-```
-
-**Model used:** [?]  
-**Reference:** [?]
-
----
-
-## Cohort 3 — Cutting-resistant E
-
-<!-- TODO: Fill in the actual dorado command. -->
-
-```bash
-# [PLACEHOLDER — replace with the actual command]
-dorado basecaller \
-    <model> \
-    <path/to/cutting_res_e/pod5/> \
-    --reference <reference.fa> \
-    > cutting_res_e_basecalled.bam
-```
-
-**Model used:** [?]  
-**Reference:** [?]
-
----
-
 ## Notes
 
-<!-- Any flags, filters, or post-processing steps applied after the main basecall commands -->
+<!-- Any flags, filters, or post-processing steps applied after the main basecall command -->

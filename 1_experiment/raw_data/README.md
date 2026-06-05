@@ -1,27 +1,10 @@
 # Raw Data
 
-Pointers to the raw POD5 files for each proof-of-principle cohort on Athey Lab Turbo.
+Pointer to the raw POD5 files for this run on Athey Lab Turbo.
 
-> ⚠️ These paths are on Great Lakes HPC (`/nfs/turbo/umms-atheylab/...`).
-> You need an active `umms-atheylab` allocation to access them.
-
-## Cohort 1 — Eco53KI
+> ⚠️ This path is on Great Lakes HPC (`/nfs/turbo/umms-atheylab/...`).
+> You need an active `umms-atheylab` allocation to access it.
 
 ```bash
-# [TODO: fill in actual Turbo path]
-ls /nfs/turbo/umms-atheylab/...
-```
-
-## Cohort 2 — RC Eco53KI+PvuII
-
-```bash
-# [TODO: fill in actual Turbo path]
-ls /nfs/turbo/umms-atheylab/...
-```
-
-## Cohort 3 — Cutting-resistant E
-
-```bash
-# [TODO: fill in actual Turbo path]
-ls /nfs/turbo/umms-atheylab/...
+ls /nfs/turbo/umms-atheylab/gregfar/SMS/SMS_POP_data/Single_Molecule_Seqeuncing_Cutting_Res_E/Regular/20250519_1041_MN48328_AYJ384_c3faa658/
 ```

@@ -3,8 +3,8 @@
 **Paper:** End-reason filtering in single-molecule sequencing of native DNA (Oxford Nanopore)  
 **Figure:** Figure 3  
 **What this shows:** Read-length kernel density estimates (KDEs) and Q-score KDEs,
-stratified by POD5-derived `end_reason`, across three proof-of-principle cohorts
-(single-species Eco53KI, RC Eco53KI+PvuII, cutting-resistant E). Validates that
+stratified by POD5-derived `end_reason`, from the Cutting-resistant E Regular
+sequencing run (`20250519_1041_MN48328_AYJ384_c3faa658`). Validates that
 `signal_positive` reads best recapitulate the known physical molecule sizes, and
 demonstrates that quality-score thresholds alone do not remove physically
 discordant non-`signal_positive` populations.

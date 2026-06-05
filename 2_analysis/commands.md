@@ -28,8 +28,9 @@ python -c "import pod5, pandas, numpy, scipy, matplotlib; print('All imports OK'
 
 ## 1. Run the figure script
 
-This reads end reasons from POD5 files, joins sequencing_summary data, and
-produces read-length KDE + Q-score KDE panels for all three cohorts.
+This reads end reasons from the POD5 files for run
+`20250519_1041_MN48328_AYJ384_c3faa658`, joins the sequencing_summary data, and
+produces read-length KDE + Q-score KDE panels.
 
 ```bash
 cd /path/to/end-reason-figure3-real-distributions
