@@ -341,6 +341,43 @@ def write_lineage(out_dir: Path, bam_file: Path, peaks: list[int],
     (out_dir / "lineage.json").write_text(json.dumps(lineage, indent=2), encoding="utf-8")
 
 
+def write_stats_table(out_dir: Path, data: pd.DataFrame) -> None:
+    """Write a CSV summary table of read counts, fractions, and length/Q-score stats."""
+    focus = data[data["end_reason"].isin(FOCUS_CLASSES)].copy()
+    total = len(focus)
+
+    rows = []
+
+    # Per end-reason rows
+    for er in FOCUS_CLASSES:
+        sub = focus[focus["end_reason"] == er]
+        n = len(sub)
+        rows.append({
+            "category":           CLASS_LABELS[er],
+            "n_reads":            n,
+            "fraction_of_total":  round(n / total, 4) if total else 0.0,
+            "mean_length_bp":     round(sub["read_length"].mean(), 1) if n else float("nan"),
+            "std_length_bp":      round(sub["read_length"].std(), 1)  if n else float("nan"),
+            "mean_qscore":        round(sub["qscore"].mean(), 3)       if n else float("nan"),
+            "std_qscore":         round(sub["qscore"].std(), 3)        if n else float("nan"),
+        })
+
+    # Overall row (all focus reads)
+    rows.append({
+        "category":           "All (focus classes)",
+        "n_reads":            total,
+        "fraction_of_total":  1.0,
+        "mean_length_bp":     round(focus["read_length"].mean(), 1) if total else float("nan"),
+        "std_length_bp":      round(focus["read_length"].std(), 1)  if total else float("nan"),
+        "mean_qscore":        round(focus["qscore"].mean(), 3)       if total else float("nan"),
+        "std_qscore":         round(focus["qscore"].std(), 3)        if total else float("nan"),
+    })
+
+    out_path = out_dir / "fig3_summary_stats.csv"
+    pd.DataFrame(rows).to_csv(out_path, index=False)
+    print(f"Saved: {out_path}", flush=True)
+
+
 # ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
@@ -386,6 +423,7 @@ def main() -> int:
     data = build_dataset(bam_file)
     make_figure(data, peaks, bam_file, out_dir)
     write_lineage(out_dir, bam_file, peaks, data)
+    write_stats_table(out_dir, data)
     print("Done.", flush=True)
     return 0
 
