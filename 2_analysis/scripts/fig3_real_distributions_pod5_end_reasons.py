@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+# DEPRECATED — 2026-06-05
+# This script takes end reasons from a POD5 directory and read metrics from
+# a bam_pass/ subdirectory inside --run-dir. It has been superseded by:
+#   fig3_real_distributions_pod5_er_custom_bam.py  (POD5 end reasons + any BAM)
+#   fig3_real_distributions_bam_er_tag.py          (dorado v1.3.1+ BAM only)
+# Kept for provenance/tracking purposes. Do not use for new runs.
 """Figure 3 — Read-length and Q-score distributions by end-reason class.
 
 FOR EXPERIMENTS BASECALLED WITH DORADO OLDER THAN v1.3.1.

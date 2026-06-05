@@ -296,9 +296,11 @@ def make_figure(data: pd.DataFrame, peaks: list[int], bam_file: Path, out_dir: P
     stem = out_dir / "fig3_real_distributions"
     fig.savefig(f"{stem}.pdf", bbox_inches="tight")
     fig.savefig(f"{stem}.png", bbox_inches="tight")
+    fig.savefig(f"{stem}.svg", bbox_inches="tight")
     plt.close(fig)
     print(f"\nSaved: {stem}.pdf", flush=True)
     print(f"Saved: {stem}.png", flush=True)
+    print(f"Saved: {stem}.svg", flush=True)
 
 
 # ---------------------------------------------------------------------------
