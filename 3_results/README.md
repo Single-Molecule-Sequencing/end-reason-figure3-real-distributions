@@ -1,0 +1,30 @@
+# 3. Results
+
+This section contains the **final, polished outputs** of the analysis: the figure
+as it will appear in the paper, and the figure legend text.
+
+---
+
+## Contents
+
+| File / Folder | Description |
+|---|---|
+| [`figures/`](figures/) | Polished figure files (PDF for print, SVG for editing, PNG for web) |
+| [`figure_legends.md`](figure_legends.md) | Figure legend text as it will appear in the paper |
+
+## What Figure 3 shows
+
+Figure 3 validates that POD5-derived `end_reason` annotations reliably separate
+physically concordant from discordant reads. Across three proof-of-principle
+restriction-digest cohorts (Eco53KI, RC Eco53KI+PvuII, cutting-resistant E),
+`signal_positive` reads produce read-length distributions that match the known
+physical fragment sizes, while non-`signal_positive` reads do not. Crucially,
+Q-score filtering at Q10 does not rescue this: non-`signal_positive` reads survive
+quality filtering, demonstrating that end-reason filtering is necessary and
+complementary to quality filtering.
+
+## Draft status
+
+- **Polished draft date:** —
+- **Illustrator refinements:** Not yet applied
+- **Pending:** Run script on all three cohorts; review raw output; Illustrator pass
