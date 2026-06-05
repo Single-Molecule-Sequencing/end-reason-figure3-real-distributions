@@ -18,7 +18,7 @@ Produces a 2×2 figure:
 
 Usage:
     python fig3_real_distributions_bam_er_tag.py \\
-        --run-dir /nfs/turbo/.../20250519_1041_MN48328_AYJ384_c3faa658 \\
+        --bam /path/to/basecalled.bam \\
         --out-dir ../../3_results/figures/raw_output \\
         --peak-bp 5500   # optional: expected physical fragment peak(s) in bp
 """
@@ -73,54 +73,52 @@ QSCORE_XLIM = (0, 25)
 # Data loading
 # ---------------------------------------------------------------------------
 
-def read_bam_metrics(bam_dir: Path) -> pd.DataFrame:
-    """Return DataFrame(read_id, read_length, qscore, end_reason) from BAM.
+def read_bam_metrics(bam_file: Path) -> pd.DataFrame:
+    """Return DataFrame(read_id, read_length, qscore, end_reason) from a BAM file.
 
     end_reason is read from the er:Z: aux tag (dorado v1.3.1+).
     qscore is read from the qs tag.
     read_length is read.query_length.
     """
-    bam_files = sorted(bam_dir.glob("*.bam"))
-    if not bam_files:
-        raise FileNotFoundError(f"No *.bam files in {bam_dir}")
+    if not bam_file.exists():
+        raise FileNotFoundError(f"BAM file not found: {bam_file}")
 
     rows: list[dict] = []
     qs_missing = 0
     er_missing = 0
 
-    for path in bam_files:
-        print(f"  BAM: {path.name}", flush=True)
-        with pysam.AlignmentFile(str(path), "rb", check_sq=False) as bam:
-            for read in bam.fetch(until_eof=True):
-                if read.is_secondary or read.is_supplementary:
+    print(f"  BAM: {bam_file.name}", flush=True)
+    with pysam.AlignmentFile(str(bam_file), "rb", check_sq=False) as bam:
+        for read in bam.fetch(until_eof=True):
+            if read.is_secondary or read.is_supplementary:
+                continue
+            length = read.query_length
+            if not length:
+                continue
+
+            # Q-score from qs tag (dorado per-read mean quality)
+            if read.has_tag("qs"):
+                qscore = float(read.get_tag("qs"))
+            else:
+                qs_missing += 1
+                quals = read.query_qualities
+                if quals is None:
                     continue
-                length = read.query_length
-                if not length:
-                    continue
+                qscore = float(np.mean(quals))
 
-                # Q-score from qs tag (dorado per-read mean quality)
-                if read.has_tag("qs"):
-                    qscore = float(read.get_tag("qs"))
-                else:
-                    qs_missing += 1
-                    quals = read.query_qualities
-                    if quals is None:
-                        continue
-                    qscore = float(np.mean(quals))
+            # End reason from er:Z: tag (dorado v1.3.1+)
+            if read.has_tag("er"):
+                end_reason = read.get_tag("er")
+            else:
+                er_missing += 1
+                end_reason = None
 
-                # End reason from er:Z: tag (dorado v1.3.1+)
-                if read.has_tag("er"):
-                    end_reason = read.get_tag("er")
-                else:
-                    er_missing += 1
-                    end_reason = None
-
-                rows.append({
-                    "read_id": read.query_name,
-                    "read_length": length,
-                    "qscore": qscore,
-                    "end_reason": end_reason,
-                })
+            rows.append({
+                "read_id": read.query_name,
+                "read_length": length,
+                "qscore": qscore,
+                "end_reason": end_reason,
+            })
 
     if qs_missing:
         print(f"  WARNING: {qs_missing:,} reads had no qs tag; used mean base quality",
@@ -138,11 +136,10 @@ def read_bam_metrics(bam_dir: Path) -> pd.DataFrame:
     return data
 
 
-def build_dataset(run_dir: Path) -> pd.DataFrame:
-    """Load BAM metrics (length, qscore, end_reason) for one run directory."""
-    bam_dir = run_dir / "bam_pass"
-    print(f"\nLoading BAM metrics from {bam_dir}", flush=True)
-    data = read_bam_metrics(bam_dir)
+def build_dataset(bam_file: Path) -> pd.DataFrame:
+    """Load BAM metrics (length, qscore, end_reason) from a single BAM file."""
+    print(f"\nLoading BAM metrics from {bam_file}", flush=True)
+    data = read_bam_metrics(bam_file)
 
     no_er = data["end_reason"].isna().sum()
     if no_er / len(data) > 0.05:
@@ -278,7 +275,7 @@ def plot_stratified_qscore(ax: plt.Axes, data: pd.DataFrame) -> None:
 # Main figure — 2×2 layout
 # ---------------------------------------------------------------------------
 
-def make_figure(data: pd.DataFrame, peaks: list[int], run_dir: Path, out_dir: Path) -> None:
+def make_figure(data: pd.DataFrame, peaks: list[int], bam_file: Path, out_dir: Path) -> None:
     set_plot_style()
 
     focus = data[data["end_reason"].isin(FOCUS_CLASSES)].copy()
@@ -316,7 +313,7 @@ def _sha256(path: Path) -> str:
     return h.hexdigest()
 
 
-def write_lineage(out_dir: Path, run_dir: Path, peaks: list[int],
+def write_lineage(out_dir: Path, bam_file: Path, peaks: list[int],
                   data: pd.DataFrame) -> None:
     focus = data[data["end_reason"].isin(FOCUS_CLASSES)]
     lineage = {
@@ -327,7 +324,7 @@ def write_lineage(out_dir: Path, run_dir: Path, peaks: list[int],
         "script_sha256": _sha256(Path(__file__)),
         "host": socket.gethostname(),
         "params": {
-            "run_dir": str(run_dir),
+            "bam_file": str(bam_file),
             "end_reason_source": "BAM er:Z: tag (dorado v1.3.1+, DOR-1307)",
             "qscore_source": "BAM qs tag (dorado per-read mean quality)",
             "read_length_source": "BAM query_length",
@@ -352,11 +349,9 @@ def parse_args() -> argparse.Namespace:
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     ap.add_argument(
-        "--run-dir", type=Path,
-        default=Path("/nfs/turbo/umms-atheylab/gregfar/SMS/SMS_POP_data"
-                     "/Single_Molecule_Seqeuncing_Cutting_Res_E/Regular"
-                     "/20250519_1041_MN48328_AYJ384_c3faa658"),
-        help="Run directory containing bam_pass/ subdirectory.",
+        "--bam", type=Path, required=True,
+        metavar="BAM",
+        help="Path to a basecalled BAM file produced by dorado v1.3.1 or later.",
     )
     ap.add_argument(
         "--out-dir", type=Path,
@@ -374,21 +369,21 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
-    run_dir: Path = args.run_dir
+    bam_file: Path = args.bam
     out_dir: Path = args.out_dir
     peaks: list[int] = sorted(set(args.peak_bp))
 
-    if not run_dir.exists():
-        print(f"ERROR: run directory not found: {run_dir}", flush=True)
+    if not bam_file.exists():
+        print(f"ERROR: BAM file not found: {bam_file}", flush=True)
         return 1
 
-    print(f"Run directory   : {run_dir}", flush=True)
+    print(f"BAM file        : {bam_file}", flush=True)
     print(f"Output directory: {out_dir}", flush=True)
     print(f"Expected peaks  : {peaks if peaks else '(none)'}", flush=True)
 
-    data = build_dataset(run_dir)
-    make_figure(data, peaks, run_dir, out_dir)
-    write_lineage(out_dir, run_dir, peaks, data)
+    data = build_dataset(bam_file)
+    make_figure(data, peaks, bam_file, out_dir)
+    write_lineage(out_dir, bam_file, peaks, data)
     print("Done.", flush=True)
     return 0
 

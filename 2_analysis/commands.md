@@ -53,8 +53,8 @@ python 2_analysis/scripts/fig3_real_distributions_pod5_end_reasons.py \
 
 ### Option B — dorado v1.3.1+ (end reasons from BAM er:Z: tag)
 
-Reads end reasons directly from the BAM `er:Z:` aux tag. Only requires
-`bam_pass/` inside `--run-dir` — no POD5 files needed.
+Reads end reasons directly from the BAM `er:Z:` aux tag. Takes a single BAM
+file as input — no run directory structure or POD5 files needed.
 
 > Note: the `er:Z:` tag was first written by dorado in **v1.3.1** (DOR-1307
 > backport, 2026-01-12). It is absent in v1.3.0 and earlier.
@@ -63,7 +63,7 @@ Reads end reasons directly from the BAM `er:Z:` aux tag. Only requires
 cd /path/to/end-reason-figure3-real-distributions
 
 python 2_analysis/scripts/fig3_real_distributions_bam_er_tag.py \
-    --run-dir /nfs/turbo/umms-atheylab/gregfar/SMS/SMS_POP_data/Single_Molecule_Seqeuncing_Cutting_Res_E/Regular/20250519_1041_MN48328_AYJ384_c3faa658 \
+    --bam /path/to/basecalled.bam \
     --out-dir 3_results/figures/raw_output \
     --peak-bp 5500   # adjust to expected fragment size(s)
 ```
