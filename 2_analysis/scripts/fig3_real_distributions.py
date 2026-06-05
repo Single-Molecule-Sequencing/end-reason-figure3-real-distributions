@@ -216,6 +216,8 @@ def plot_overall_length(ax: plt.Axes, data: pd.DataFrame, peaks: list[int]) -> N
         _shade_latest(ax, "#333333", 0.14)
     for peak in peaks:
         ax.axvline(np.log10(peak), color="#555555", linestyle="--", linewidth=0.8, alpha=0.7)
+        ax.text(np.log10(peak) + 0.03, 0.97, "expected molecular length",
+                transform=ax.get_xaxis_transform(), va="top", fontsize=7, color="#555555")
     _apply_length_axis(ax)
     _finalize(ax)
     ax.set_title("Overall read-length distribution", loc="left", fontweight="bold")
@@ -252,6 +254,8 @@ def plot_stratified_length(ax: plt.Axes, data: pd.DataFrame, peaks: list[int]) -
         _shade_latest(ax, CLASS_COLORS[er], 0.16 if er == "signal_positive" else 0.10)
     for peak in peaks:
         ax.axvline(np.log10(peak), color="#555555", linestyle="--", linewidth=0.8, alpha=0.7)
+        ax.text(np.log10(peak) + 0.03, 0.97, "expected molecular length",
+                transform=ax.get_xaxis_transform(), va="top", fontsize=7, color="#555555")
     _apply_length_axis(ax)
     _finalize(ax)
     ax.set_title("Read length stratified by end-reason", loc="left", fontweight="bold")
