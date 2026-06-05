@@ -299,7 +299,7 @@ def make_figure(data: pd.DataFrame, peaks: list[int], run_dir: Path, out_dir: Pa
     plot_stratified_qscore(axes[1, 1], focus)
 
     fig.suptitle(
-        f"Cutting-resistant E / Regular: read-length and Q-score distributions",
+        f"Read-length and Q-score Distributions Stratified By End Reason",
         fontsize=12, fontweight="bold",
     )
 
