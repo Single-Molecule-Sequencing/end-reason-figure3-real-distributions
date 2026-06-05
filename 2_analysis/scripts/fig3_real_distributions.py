@@ -216,7 +216,7 @@ def plot_overall_length(ax: plt.Axes, data: pd.DataFrame, peaks: list[int]) -> N
         _shade_latest(ax, "#333333", 0.14)
     for peak in peaks:
         ax.axvline(np.log10(peak), color="#222222", linestyle="--", linewidth=1.0, alpha=0.75)
-        ax.text(np.log10(peak) + 0.03, 0.97, "expected molecular length",
+        ax.text(np.log10(peak) + 0.03, 0.97, "Expected molecular length",
                 transform=ax.get_xaxis_transform(), va="top", fontsize=7)
     _apply_length_axis(ax)
     _finalize(ax)
