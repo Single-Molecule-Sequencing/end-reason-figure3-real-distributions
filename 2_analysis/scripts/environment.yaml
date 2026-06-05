@@ -1,0 +1,14 @@
+name: end-reason-fig3
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.10
+  - numpy
+  - pandas
+  - matplotlib
+  - seaborn
+  - pysam
+  - pip
+  - pip:
+      - pod5
