@@ -115,12 +115,17 @@ def read_pod5_end_reasons(pod5_dir: Path) -> pd.DataFrame:
 
 
 def read_bam_metrics(bam_file: Path) -> pd.DataFrame:
-    """Return DataFrame(read_id, read_length, qscore) from a single BAM file."""
+    """Return DataFrame(pod5_read_id, read_length, qscore) from a single BAM file.
+
+    For split reads (dorado read splitting), pi:Z holds the parent read ID which
+    matches the POD5 read_id. For non-split reads, query_name is used directly.
+    """
     if not bam_file.exists():
         raise FileNotFoundError(f"BAM file not found: {bam_file}")
 
     rows: list[dict] = []
     qs_missing = 0
+    split_reads = 0
 
     print(f"  BAM: {bam_file.name}", flush=True)
     with pysam.AlignmentFile(str(bam_file), "rb", check_sq=False) as bam:
@@ -138,13 +143,26 @@ def read_bam_metrics(bam_file: Path) -> pd.DataFrame:
                 if quals is None:
                     continue
                 qscore = float(np.mean(quals))
-            rows.append({"read_id": read.query_name,
+
+            # Use parent read ID (pi:Z) when present — dorado read splitting
+            # assigns a new query_name to each subread; pi:Z is the original
+            # POD5 read ID that matches the POD5 end_reason table.
+            if read.has_tag("pi"):
+                pod5_read_id = read.get_tag("pi")
+                split_reads += 1
+            else:
+                pod5_read_id = read.query_name
+
+            rows.append({"pod5_read_id": pod5_read_id,
                           "read_length": length,
                           "qscore": qscore})
 
     if qs_missing:
         print(f"  WARNING: {qs_missing:,} reads had no qs tag; used mean base quality",
               flush=True)
+    if split_reads:
+        print(f"  Split reads (pi:Z tag present): {split_reads:,} — "
+              "joining via parent read ID", flush=True)
 
     data = pd.DataFrame(rows).dropna(subset=["read_length", "qscore"])
     data = data[data["read_length"] > 0].reset_index(drop=True)
@@ -160,7 +178,7 @@ def build_dataset(pod5_dir: Path, bam_file: Path) -> pd.DataFrame:
     print(f"\nLoading BAM metrics (qs tag) from {bam_file}", flush=True)
     bam = read_bam_metrics(bam_file)
 
-    merged = bam.merge(er, on="read_id", how="inner")
+    merged = bam.merge(er, left_on="pod5_read_id", right_on="read_id", how="inner")
     unmatched = len(bam) - len(merged)
     if len(bam) and unmatched / len(bam) > 0.05:
         raise ValueError(
