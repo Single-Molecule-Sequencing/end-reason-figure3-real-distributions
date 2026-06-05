@@ -33,11 +33,16 @@ acquisition file. We read these directly from the Cutting-resistant E Regular
 run directory using `pod5.Reader` → `read_table`. This gives us the
 ground-truth sequencer-assigned end reason without any downstream annotation.
 
-### Step 2 — Join read length and Q-score from sequencing_summary
+### Step 2 — Join read length and Q-score from BAM
 
-The `sequencing_summary.txt` produced by dorado contains per-read metrics
-including `sequence_length_template` and `mean_qscore_template`. We join this
-table to the POD5 end-reason table on `read_id` using pandas.
+The basecalled BAM files in `bam_pass/` contain dorado's per-read mean quality
+score in the `qs` tag. We read this tag (plus `query_length` for read length)
+for every primary alignment using pysam and join to the POD5 end-reason table
+by `read_id`.
+
+> **Note:** `qs` is dorado's authoritative read-level Q-score. The script warns
+> and falls back to mean base quality only for the rare reads where the tag is
+> absent.
 
 ### Step 3 — Compute expected physical peak centers
 
@@ -70,7 +75,9 @@ table or bar chart per cohort.
 | Library | Purpose |
 |---|---|
 | `pod5` | Read `end_reason` from POD5 acquisition files |
-| `pandas` | `read_id` join between POD5 and sequencing_summary |
-| `numpy` | KDE computation and trough-bounded peak workflow |
-| `scipy` | Gaussian KDE |
-| `matplotlib` | Plotting the KDE panels and summary table |
+| `pysam` | Read BAM files — `qs` tag for Q-score, `query_length` for read length |
+| `pandas` | `read_id` join between POD5 and BAM |
+| `numpy` | KDE computation and physical-window logic |
+| `scipy` | Gaussian KDE (via seaborn) |
+| `matplotlib` | Plotting the KDE panels and bar chart |
+| `seaborn` | KDE plotting |

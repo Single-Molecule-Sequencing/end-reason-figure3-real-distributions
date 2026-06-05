@@ -21,7 +21,7 @@ srun --partition=standard --cpus-per-task=4 --mem=32G --pty bash
 conda activate atheylab
 
 # Verify key packages are importable
-python -c "import pod5, pandas, numpy, scipy, matplotlib; print('All imports OK')"
+python -c "import pod5, pysam, pandas, numpy, matplotlib, seaborn; print('All imports OK')"
 ```
 
 ---
@@ -35,11 +35,14 @@ produces read-length KDE + Q-score KDE panels.
 ```bash
 cd /path/to/end-reason-figure3-real-distributions
 
-python 2_analysis/scripts/fig3_real_distributions.py
+python 2_analysis/scripts/fig3_real_distributions.py \
+    --run-dir /nfs/turbo/umms-atheylab/gregfar/SMS/SMS_POP_data/Single_Molecule_Seqeuncing_Cutting_Res_E/Regular/20250519_1041_MN48328_AYJ384_c3faa658 \
+    --out-dir 3_results/figures/raw_output \
+    --peak-bp <EXPECTED_BP>   # fill in expected fragment size(s), e.g. --peak-bp 3000 6000
 ```
 
-**Output:** KDE figure files written to `3_results/figures/raw_output/`  
-**Runtime:** ~5–10 minutes per cohort depending on POD5 size and allocation CPUs
+**Output:** `3_results/figures/raw_output/fig3_real_distributions.{pdf,png}` and `lineage.json`  
+**Runtime:** ~5–15 minutes depending on POD5/BAM size and allocation CPUs
 
 ---
 

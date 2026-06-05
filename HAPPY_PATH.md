@@ -44,7 +44,10 @@ ls <path/to/basecalled/>   # see 1_experiment/basecalled_data/README.md
 ```bash
 conda activate atheylab
 
-python 2_analysis/scripts/fig3_real_distributions.py
+python 2_analysis/scripts/fig3_real_distributions.py \
+    --run-dir /nfs/turbo/umms-atheylab/gregfar/SMS/SMS_POP_data/Single_Molecule_Seqeuncing_Cutting_Res_E/Regular/20250519_1041_MN48328_AYJ384_c3faa658 \
+    --out-dir 3_results/figures/raw_output \
+    --peak-bp <EXPECTED_BP>   # fill in expected fragment size(s)
 ```
 
 📖 What the script does (plain English): [`2_analysis/overview.md`](2_analysis/overview.md)  
