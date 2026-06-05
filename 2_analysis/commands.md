@@ -48,7 +48,7 @@ cd /path/to/end-reason-figure3-real-distributions
 python 2_analysis/scripts/fig3_real_distributions_pod5_end_reasons.py \
     --run-dir /nfs/turbo/umms-atheylab/gregfar/SMS/SMS_POP_data/Single_Molecule_Seqeuncing_Cutting_Res_E/Regular/20250519_1041_MN48328_AYJ384_c3faa658 \
     --out-dir 3_results/figures/raw_output \
-    --peak-bp 5500   # adjust to expected fragment size(s)
+    --peak-bp 4800   # adjust to expected fragment size(s)
 ```
 
 ### Option B — dorado v1.3.1+ (end reasons from BAM er:Z: tag)
@@ -65,7 +65,7 @@ cd /path/to/end-reason-figure3-real-distributions
 python 2_analysis/scripts/fig3_real_distributions_bam_er_tag.py \
     --bam /path/to/basecalled.bam \
     --out-dir 3_results/figures/raw_output \
-    --peak-bp 5500   # adjust to expected fragment size(s)
+    --peak-bp 4800   # adjust to expected fragment size(s)
 ```
 
 Both scripts produce identical output:
