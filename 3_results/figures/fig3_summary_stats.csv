@@ -1,0 +1,6 @@
+category,n_reads,fraction_of_total,mean_length_bp,std_length_bp,mean_qscore,std_qscore
+Signal positive,367712,0.9662,4490.5,1627.6,17.621,3.628
+Unblock mux change,11678,0.0307,3982.1,13656.7,14.069,5.732
+Mux change,276,0.0007,201.9,493.6,16.74,5.251
+Signal negative,899,0.0024,4730.8,2954.7,13.212,3.937
+All (focus classes),380565,1.0,4472.4,2885.1,17.501,3.769
