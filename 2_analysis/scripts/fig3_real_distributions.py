@@ -215,9 +215,9 @@ def plot_overall_length(ax: plt.Axes, data: pd.DataFrame, peaks: list[int]) -> N
                     bw_adjust=0.85, clip=LENGTH_XLIM, warn_singular=False)
         _shade_latest(ax, "#333333", 0.14)
     for peak in peaks:
-        ax.axvline(np.log10(peak), color="#555555", linestyle="--", linewidth=0.8, alpha=0.7)
+        ax.axvline(np.log10(peak), color="#222222", linestyle="--", linewidth=1.0, alpha=0.75)
         ax.text(np.log10(peak) + 0.03, 0.97, "expected molecular length",
-                transform=ax.get_xaxis_transform(), va="top", fontsize=7, color="#555555")
+                transform=ax.get_xaxis_transform(), va="top", fontsize=7)
     _apply_length_axis(ax)
     _finalize(ax)
     ax.set_title("Overall read-length distribution", loc="left", fontweight="bold")
@@ -253,9 +253,9 @@ def plot_stratified_length(ax: plt.Axes, data: pd.DataFrame, peaks: list[int]) -
                     bw_adjust=0.85, common_norm=False, clip=LENGTH_XLIM, warn_singular=False)
         _shade_latest(ax, CLASS_COLORS[er], 0.16 if er == "signal_positive" else 0.10)
     for peak in peaks:
-        ax.axvline(np.log10(peak), color="#555555", linestyle="--", linewidth=0.8, alpha=0.7)
+        ax.axvline(np.log10(peak), color="#222222", linestyle="--", linewidth=1.0, alpha=0.75)
         ax.text(np.log10(peak) + 0.03, 0.97, "expected molecular length",
-                transform=ax.get_xaxis_transform(), va="top", fontsize=7, color="#555555")
+                transform=ax.get_xaxis_transform(), va="top", fontsize=7)
     _apply_length_axis(ax)
     _finalize(ax)
     ax.set_title("Read length stratified by end-reason", loc="left", fontweight="bold")
