@@ -1,8 +1,14 @@
 #!/usr/bin/env python3
 """Figure 3 — Read-length and Q-score distributions by end-reason class.
 
-Reads end reasons from POD5 acquisition files for a single run directory.
+FOR EXPERIMENTS BASECALLED WITH DORADO OLDER THAN v1.3.1.
+End reasons are read from POD5 acquisition files (the only source available
+in dorado <v1.3.1, which does not write the er:Z: BAM tag).
 Joins read length and Q-score from basecalled BAM files (``qs`` tag) by read_id.
+
+For experiments basecalled with dorado v1.3.1 or later, use
+fig3_real_distributions_bam_er_tag.py instead — it reads end reasons
+directly from the BAM er:Z: tag and does not require POD5 files.
 
 Produces a 2×2 figure:
   top-left:     Overall read-length distribution (all reads, single black KDE)
