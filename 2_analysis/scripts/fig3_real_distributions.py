@@ -3,21 +3,18 @@
 
 Reads end reasons from POD5 acquisition files for a single run directory.
 Joins read length and Q-score from basecalled BAM files (``qs`` tag) by read_id.
-Produces a three-panel figure:
-  left:   read-length KDE by end-reason (log-scaled bp)
-  middle: Q-score KDE by end-reason (Q10 reference line)
-  right:  % reads in expected physical fragment-size window per end-reason
+
+Produces a 2×2 figure:
+  top-left:     Overall read-length distribution (all reads, single black KDE)
+  top-right:    Overall Q-score distribution (all reads, single black KDE)
+  bottom-left:  Read length stratified by end-reason (4 colored KDEs)
+  bottom-right: Q-score stratified by end-reason (4 colored KDEs)
 
 Usage:
     python fig3_real_distributions.py \\
         --run-dir /nfs/turbo/.../20250519_1041_MN48328_AYJ384_c3faa658 \\
-        --out-dir ../../3_results/figures/raw_output
-
-    # optionally mark expected physical fragment peak(s) with dashed lines:
-    python fig3_real_distributions.py \\
-        --run-dir /nfs/turbo/.../20250519_1041_MN48328_AYJ384_c3faa658 \\
         --out-dir ../../3_results/figures/raw_output \\
-        --peak-bp 3000 6000
+        --peak-bp 5500   # optional: expected physical fragment peak(s) in bp
 """
 from __future__ import annotations
 
@@ -62,75 +59,71 @@ CLASS_COLORS = {
     "signal_negative": "#d62728",
 }
 
+LENGTH_XLIM = (1.8, 4.7)
+LENGTH_TICKS = [2.0, 2.5, 3.0, 3.5, 4.0, 4.5]
+LENGTH_LABELS = ["100", "316", "1 kb", "3.2 kb", "10 kb", "32 kb"]
+QSCORE_XLIM = (0, 25)
+
 
 # ---------------------------------------------------------------------------
 # Data loading
 # ---------------------------------------------------------------------------
 
-def _format_pod5_read_id(value: object) -> str:
+def _fmt_read_id(value: object) -> str:
     return str(uuid.UUID(bytes=bytes(value)))
 
 
 def read_pod5_end_reasons(pod5_dir: Path) -> pd.DataFrame:
-    """Return DataFrame(read_id, end_reason) from all *.pod5 files in pod5_dir."""
+    """Return DataFrame(read_id, end_reason) from all *.pod5 files."""
     pod5_files = sorted(pod5_dir.glob("*.pod5"))
     if not pod5_files:
-        raise FileNotFoundError(f"No *.pod5 files found in {pod5_dir}")
+        raise FileNotFoundError(f"No *.pod5 files in {pod5_dir}")
 
     frames: list[pd.DataFrame] = []
-    for pod5_path in pod5_files:
-        print(f"  reading POD5 end reasons: {pod5_path.name}", flush=True)
-        reader = pod5.Reader(str(pod5_path))
+    for path in pod5_files:
+        print(f"  POD5: {path.name}", flush=True)
+        reader = pod5.Reader(str(path))
         try:
-            for batch_idx in range(reader.read_table.num_record_batches):
-                batch = reader.read_table.get_batch(batch_idx).select(["read_id", "end_reason"])
+            for i in range(reader.read_table.num_record_batches):
+                batch = reader.read_table.get_batch(i).select(["read_id", "end_reason"])
                 chunk = batch.to_pandas()
                 if chunk.empty:
                     continue
-                chunk["read_id"] = [_format_pod5_read_id(v) for v in chunk["read_id"]]
+                chunk["read_id"] = [_fmt_read_id(v) for v in chunk["read_id"]]
                 chunk["end_reason"] = chunk["end_reason"].astype(str)
                 frames.append(chunk)
         finally:
             reader.close()
 
     if not frames:
-        raise ValueError(f"No reads extracted from POD5 files in {pod5_dir}")
+        raise ValueError(f"No reads extracted from {pod5_dir}")
 
     data = pd.concat(frames, ignore_index=True)
-    # resolve duplicate read_ids (keep first occurrence)
     dupes = data.groupby("read_id")["end_reason"].nunique()
-    conflicts = dupes[dupes > 1]
-    if not conflicts.empty:
-        raise ValueError(f"Conflicting end reasons for {len(conflicts)} read IDs in {pod5_dir}")
+    if (dupes > 1).any():
+        raise ValueError(f"Conflicting end reasons for {(dupes > 1).sum()} read IDs")
     data = data.drop_duplicates(subset=["read_id"], keep="first")
-    print(f"  POD5: {len(data):,} reads with end reasons", flush=True)
+    print(f"  POD5 total: {len(data):,} reads", flush=True)
     return data[["read_id", "end_reason"]].reset_index(drop=True)
 
 
 def read_bam_metrics(bam_dir: Path) -> pd.DataFrame:
-    """Return DataFrame(read_id, read_length, qscore) from all BAM files.
-
-    Q-score is taken from the ``qs`` tag (dorado's per-read mean quality score).
-    Falls back to mean base quality from ``query_qualities`` if ``qs`` is absent.
-    Read length is ``query_length`` (full query sequence including soft clips).
-    """
+    """Return DataFrame(read_id, read_length, qscore) from BAM qs tag."""
     bam_files = sorted(bam_dir.glob("*.bam"))
     if not bam_files:
-        raise FileNotFoundError(f"No *.bam files found in {bam_dir}")
+        raise FileNotFoundError(f"No *.bam files in {bam_dir}")
 
     rows: list[dict] = []
     qs_missing = 0
-    for bam_path in bam_files:
-        print(f"  reading BAM metrics: {bam_path.name}", flush=True)
-        with pysam.AlignmentFile(str(bam_path), "rb", check_sq=False) as bam:
+    for path in bam_files:
+        print(f"  BAM:  {path.name}", flush=True)
+        with pysam.AlignmentFile(str(path), "rb", check_sq=False) as bam:
             for read in bam.fetch(until_eof=True):
                 if read.is_secondary or read.is_supplementary:
                     continue
-                read_id = read.query_name
-                read_length = read.query_length
-                if read_length is None or read_length == 0:
+                length = read.query_length
+                if not length:
                     continue
-                # prefer qs tag; fall back to mean base quality
                 if read.has_tag("qs"):
                     qscore = float(read.get_tag("qs"))
                 else:
@@ -139,58 +132,35 @@ def read_bam_metrics(bam_dir: Path) -> pd.DataFrame:
                     if quals is None:
                         continue
                     qscore = float(np.mean(quals))
-                rows.append({"read_id": read_id, "read_length": read_length, "qscore": qscore})
+                rows.append({"read_id": read.query_name,
+                              "read_length": length,
+                              "qscore": qscore})
 
-    if not rows:
-        raise ValueError(f"No reads extracted from BAM files in {bam_dir}")
     if qs_missing:
-        print(f"  WARNING: {qs_missing:,} reads lacked qs tag; used mean base quality instead", flush=True)
+        print(f"  WARNING: {qs_missing:,} reads had no qs tag; used mean base quality", flush=True)
 
-    data = pd.DataFrame(rows)
-    data = data.dropna(subset=["read_length", "qscore"])
-    data = data[data["read_length"] > 0]
-    print(f"  BAM: {len(data):,} reads with length + Q-score", flush=True)
-    return data.reset_index(drop=True)
+    data = pd.DataFrame(rows).dropna(subset=["read_length", "qscore"])
+    data = data[data["read_length"] > 0].reset_index(drop=True)
+    print(f"  BAM total:  {len(data):,} reads", flush=True)
+    return data
 
 
 def build_dataset(run_dir: Path) -> pd.DataFrame:
-    """Join POD5 end reasons with BAM metrics for a single run directory."""
-    pod5_dir = run_dir / "pod5"
-    bam_dir = run_dir / "bam_pass"
+    """Load and join POD5 end reasons + BAM metrics for one run directory."""
+    print(f"\nLoading POD5 end reasons from {run_dir / 'pod5'}", flush=True)
+    er = read_pod5_end_reasons(run_dir / "pod5")
 
-    print(f"Loading POD5 end reasons from {pod5_dir}", flush=True)
-    er = read_pod5_end_reasons(pod5_dir)
-
-    print(f"Loading BAM metrics (qs tag) from {bam_dir}", flush=True)
-    bam = read_bam_metrics(bam_dir)
+    print(f"\nLoading BAM metrics (qs tag) from {run_dir / 'bam_pass'}", flush=True)
+    bam = read_bam_metrics(run_dir / "bam_pass")
 
     merged = bam.merge(er, on="read_id", how="inner")
-    n_unmatched = len(bam) - len(merged)
-    if len(bam) > 0 and n_unmatched / len(bam) > 0.05:
-        raise ValueError(
-            f"More than 5% of BAM reads ({n_unmatched:,}/{len(bam):,}) "
-            "had no matching POD5 end reason"
-        )
-    print(f"  Joined: {len(merged):,} reads ({n_unmatched:,} BAM reads unmatched in POD5)", flush=True)
+    unmatched = len(bam) - len(merged)
+    if len(bam) and unmatched / len(bam) > 0.05:
+        raise ValueError(f"{unmatched:,}/{len(bam):,} BAM reads had no POD5 end reason (>5%)")
+    print(f"\nJoined: {len(merged):,} reads ({unmatched:,} unmatched)", flush=True)
 
-    merged = merged[merged["end_reason"].isin(FOCUS_CLASSES)].copy()
     merged["log10_length"] = np.log10(merged["read_length"].astype(float))
-    merged["end_reason_label"] = merged["end_reason"].map(CLASS_LABELS)
     return merged.reset_index(drop=True)
-
-
-# ---------------------------------------------------------------------------
-# Physical-window helpers
-# ---------------------------------------------------------------------------
-
-def in_physical_window(lengths: np.ndarray, peaks: list[int]) -> np.ndarray:
-    if not peaks:
-        return np.zeros(len(lengths), dtype=bool)
-    mask = np.zeros(len(lengths), dtype=bool)
-    for center in peaks:
-        tol = max(50.0, 0.075 * float(center))
-        mask |= np.abs(lengths - center) <= tol
-    return mask
 
 
 # ---------------------------------------------------------------------------
@@ -225,8 +195,52 @@ def _shade_latest(ax: plt.Axes, color: str, alpha: float) -> None:
     line.set_zorder(line.get_zorder() + 0.2)
 
 
-def plot_length_kde(ax: plt.Axes, data: pd.DataFrame, peaks: list[int], show_legend: bool) -> None:
-    xlim = (1.8, 4.7)
+def _apply_length_axis(ax: plt.Axes) -> None:
+    ax.set_xlim(*LENGTH_XLIM)
+    ax.set_xticks(LENGTH_TICKS)
+    ax.set_xticklabels(LENGTH_LABELS)
+    ax.set_xlabel("Read length (log-scaled bp)")
+
+
+def _finalize(ax: plt.Axes) -> None:
+    ax.set_ylabel("KDE density")
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+
+
+def plot_overall_length(ax: plt.Axes, data: pd.DataFrame, peaks: list[int]) -> None:
+    if len(data) >= 5:
+        sns.kdeplot(data=data, x="log10_length", ax=ax,
+                    color="#333333", linewidth=1.5,
+                    bw_adjust=0.85, clip=LENGTH_XLIM, warn_singular=False)
+        _shade_latest(ax, "#333333", 0.14)
+    for peak in peaks:
+        ax.axvline(np.log10(peak), color="#555555", linestyle="--", linewidth=0.8, alpha=0.7)
+    _apply_length_axis(ax)
+    _finalize(ax)
+    ax.set_title("Overall read-length distribution", loc="left", fontweight="bold")
+    if ax.get_legend():
+        ax.get_legend().remove()
+
+
+def plot_overall_qscore(ax: plt.Axes, data: pd.DataFrame) -> None:
+    if len(data) >= 5:
+        sns.kdeplot(data=data, x="qscore", ax=ax,
+                    color="#333333", linewidth=1.5,
+                    bw_adjust=0.95, clip=QSCORE_XLIM, warn_singular=False)
+        _shade_latest(ax, "#333333", 0.14)
+    ax.axvline(10, color="#222222", linestyle="--", linewidth=1.0, alpha=0.75)
+    ax.text(10.2, 0.97, "Q10 field filter",
+            transform=ax.get_xaxis_transform(), va="top", fontsize=7)
+    ax.set_xlim(*QSCORE_XLIM)
+    ax.set_xlabel("Mean per-read Q-score")
+    _finalize(ax)
+    ax.set_title("Overall Q-score distribution", loc="left", fontweight="bold")
+    if ax.get_legend():
+        ax.get_legend().remove()
+
+
+def plot_stratified_length(ax: plt.Axes, data: pd.DataFrame, peaks: list[int]) -> None:
     for er in FOCUS_CLASSES:
         sub = data[data["end_reason"] == er]
         if len(sub) < 5:
@@ -234,34 +248,17 @@ def plot_length_kde(ax: plt.Axes, data: pd.DataFrame, peaks: list[int], show_leg
         sns.kdeplot(data=sub, x="log10_length", ax=ax,
                     color=CLASS_COLORS[er], label=CLASS_LABELS[er],
                     linewidth=1.6 if er == "signal_positive" else 1.1,
-                    bw_adjust=0.85, common_norm=False, clip=xlim, warn_singular=False)
+                    bw_adjust=0.85, common_norm=False, clip=LENGTH_XLIM, warn_singular=False)
         _shade_latest(ax, CLASS_COLORS[er], 0.16 if er == "signal_positive" else 0.10)
-
-    for peak in sorted(set(peaks)):
-        ax.axvline(np.log10(peak), color="#555555", linestyle="--", linewidth=0.8, alpha=0.45)
-    if peaks:
-        ax.text(0.01, 0.97, "Dashed: expected physical peaks",
-                transform=ax.transAxes, va="top", fontsize=7, color="#555555")
-
-    ticks = [2.0, 2.5, 3.0, 3.5, 4.0, 4.5]
-    labels = ["100", "316", "1 kb", "3.2 kb", "10 kb", "32 kb"]
-    ax.set_xlim(*xlim)
-    ax.set_xticks(ticks)
-    ax.set_xticklabels(labels)
-    ax.set_xlabel("Read length (log-scaled bp)")
-    ax.set_ylabel("KDE density")
-    ax.set_title("Read length by end-reason", loc="left", fontsize=9, fontweight="bold")
-    ax.grid(axis="y", alpha=0.25)
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-    if show_legend:
-        ax.legend(frameon=False, fontsize=7, loc="upper right")
-    elif ax.get_legend():
-        ax.get_legend().remove()
+    for peak in peaks:
+        ax.axvline(np.log10(peak), color="#555555", linestyle="--", linewidth=0.8, alpha=0.7)
+    _apply_length_axis(ax)
+    _finalize(ax)
+    ax.set_title("Read length stratified by end-reason", loc="left", fontweight="bold")
+    ax.legend(frameon=False, fontsize=7, loc="upper left")
 
 
-def plot_qscore_kde(ax: plt.Axes, data: pd.DataFrame) -> None:
-    xlim = (0, 26)
+def plot_stratified_qscore(ax: plt.Axes, data: pd.DataFrame) -> None:
     for er in FOCUS_CLASSES:
         sub = data[data["end_reason"] == er]
         if len(sub) < 5:
@@ -269,84 +266,46 @@ def plot_qscore_kde(ax: plt.Axes, data: pd.DataFrame) -> None:
         sns.kdeplot(data=sub, x="qscore", ax=ax,
                     color=CLASS_COLORS[er], label=CLASS_LABELS[er],
                     linewidth=1.6 if er == "signal_positive" else 1.1,
-                    bw_adjust=0.95, common_norm=False, clip=xlim, warn_singular=False)
+                    bw_adjust=0.95, common_norm=False, clip=QSCORE_XLIM, warn_singular=False)
         _shade_latest(ax, CLASS_COLORS[er], 0.16 if er == "signal_positive" else 0.10)
-
     ax.axvline(10, color="#222222", linestyle="--", linewidth=1.0, alpha=0.75)
-    ax.text(10.2, 0.96, "Q10 field filter",
+    ax.text(10.2, 0.97, "Q10 field filter",
             transform=ax.get_xaxis_transform(), va="top", fontsize=7)
-    ax.set_xlim(*xlim)
-    ax.set_xlabel("Mean per-read Q-score (qs tag)")
-    ax.set_ylabel("KDE density")
-    ax.set_title("Q-score by end-reason", loc="left", fontsize=9, fontweight="bold")
-    ax.grid(axis="y", alpha=0.25)
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-    if ax.get_legend():
-        ax.get_legend().remove()
-
-
-def plot_physical_bar(ax: plt.Axes, data: pd.DataFrame, peaks: list[int]) -> None:
-    rows = []
-    lengths = data["read_length"].to_numpy(dtype=np.float64)
-    in_window = in_physical_window(lengths, peaks)
-    for er in FOCUS_CLASSES:
-        mask = data["end_reason"].to_numpy() == er
-        n = int(mask.sum())
-        if n == 0:
-            continue
-        pct = 100.0 * int((in_window & mask).sum()) / n
-        rows.append({"end_reason": er, "label": CLASS_LABELS[er], "pct": pct, "n": n})
-
-    if not rows:
-        ax.set_visible(False)
-        return
-
-    df = pd.DataFrame(rows)
-    colors = [CLASS_COLORS[v] for v in df["end_reason"]]
-    ax.barh(df["label"], df["pct"], color=colors, alpha=0.88)
-    ax.set_xlim(0, 100)
-    ax.set_xlabel("Reads in expected physical window (%)")
-    ax.set_title("Physical-window match", loc="left", fontsize=9, fontweight="bold")
-    for idx, row in enumerate(df.itertuples(index=False)):
-        ax.text(min(row.pct + 1.5, 97), idx, f"{row.pct:.1f}%", va="center", fontsize=7)
-    ax.grid(axis="x", alpha=0.25)
-    ax.spines["top"].set_visible(False)
-    ax.spines["right"].set_visible(False)
-
-    if not peaks:
-        ax.text(0.5, 0.5, "No expected peaks provided\n(all bars will be 0%)",
-                transform=ax.transAxes, ha="center", va="center", fontsize=8, color="#888")
+    ax.set_xlim(*QSCORE_XLIM)
+    ax.set_xlabel("Mean per-read Q-score")
+    _finalize(ax)
+    ax.set_title("Q-score stratified by end-reason", loc="left", fontweight="bold")
+    ax.legend(frameon=False, fontsize=7, loc="upper left")
 
 
 # ---------------------------------------------------------------------------
-# Main figure
+# Main figure — 2×2 layout
 # ---------------------------------------------------------------------------
 
 def make_figure(data: pd.DataFrame, peaks: list[int], run_dir: Path, out_dir: Path) -> None:
     set_plot_style()
-    fig, axes = plt.subplots(
-        nrows=1, ncols=3,
-        figsize=(13.5, 4.8),
-        gridspec_kw={"width_ratios": [1.2, 1.0, 0.8]},
-        constrained_layout=True,
-    )
-    plot_length_kde(axes[0], data, peaks, show_legend=True)
-    plot_qscore_kde(axes[1], data)
-    plot_physical_bar(axes[2], data, peaks)
 
-    run_name = run_dir.name
+    focus = data[data["end_reason"].isin(FOCUS_CLASSES)].copy()
+
+    fig, axes = plt.subplots(2, 2, figsize=(10.5, 7.2), constrained_layout=True)
+
+    plot_overall_length(axes[0, 0], focus, peaks)
+    plot_overall_qscore(axes[0, 1], focus)
+    plot_stratified_length(axes[1, 0], focus, peaks)
+    plot_stratified_qscore(axes[1, 1], focus)
+
     fig.suptitle(
-        f"Signal-positive reads recapitulate known physical molecule sizes\n"
-        f"Run: {run_name}",
-        fontsize=11, fontweight="bold",
+        f"Cutting-resistant E / Regular: read-length and Q-score distributions",
+        fontsize=12, fontweight="bold",
     )
 
     out_dir.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out_dir / "fig3_real_distributions.pdf", bbox_inches="tight")
-    fig.savefig(out_dir / "fig3_real_distributions.png", bbox_inches="tight")
+    stem = out_dir / "fig3_real_distributions"
+    fig.savefig(f"{stem}.pdf", bbox_inches="tight")
+    fig.savefig(f"{stem}.png", bbox_inches="tight")
     plt.close(fig)
-    print(f"Saved figure to {out_dir / 'fig3_real_distributions.pdf'}", flush=True)
+    print(f"\nSaved: {stem}.pdf", flush=True)
+    print(f"Saved: {stem}.png", flush=True)
 
 
 # ---------------------------------------------------------------------------
@@ -361,14 +320,9 @@ def _sha256(path: Path) -> str:
     return h.hexdigest()
 
 
-def write_lineage(
-    out_dir: Path,
-    run_dir: Path,
-    peaks: list[int],
-    data: pd.DataFrame,
-    args: argparse.Namespace,
-) -> None:
-    counts = {er: int((data["end_reason"] == er).sum()) for er in FOCUS_CLASSES}
+def write_lineage(out_dir: Path, run_dir: Path, peaks: list[int],
+                  data: pd.DataFrame) -> None:
+    focus = data[data["end_reason"].isin(FOCUS_CLASSES)]
     lineage = {
         "figure_id": "fig3_real_distributions",
         "paper_id": "end-reason",
@@ -384,8 +338,10 @@ def write_lineage(
             "expected_peaks_bp": peaks,
             "qscore_reference_line": "Q10",
         },
-        "read_counts_by_end_reason": counts,
-        "total_focus_reads": int(len(data)),
+        "read_counts_by_end_reason": {
+            er: int((focus["end_reason"] == er).sum()) for er in FOCUS_CLASSES
+        },
+        "total_focus_reads": int(len(focus)),
     }
     (out_dir / "lineage.json").write_text(json.dumps(lineage, indent=2), encoding="utf-8")
 
@@ -395,7 +351,10 @@ def write_lineage(
 # ---------------------------------------------------------------------------
 
 def parse_args() -> argparse.Namespace:
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap = argparse.ArgumentParser(
+        description=__doc__,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
     ap.add_argument(
         "--run-dir", type=Path,
         default=Path("/nfs/turbo/umms-atheylab/gregfar/SMS/SMS_POP_data"
@@ -406,14 +365,13 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument(
         "--out-dir", type=Path,
         default=Path(__file__).resolve().parents[2] / "3_results" / "figures" / "raw_output",
-        help="Directory to write output figures and provenance.",
+        help="Directory for output figures and provenance.",
     )
     ap.add_argument(
         "--peak-bp", type=int, nargs="*", default=[],
         metavar="BP",
-        help="Expected physical fragment-size peak(s) in bp. "
-             "Used to draw dashed reference lines and compute physical-window percentages. "
-             "Example: --peak-bp 3000 6000",
+        help="Expected physical fragment-size peak(s) in bp for dashed reference lines. "
+             "Example: --peak-bp 5500",
     )
     return ap.parse_args()
 
@@ -428,18 +386,13 @@ def main() -> int:
         print(f"ERROR: run directory not found: {run_dir}", flush=True)
         return 1
 
-    out_dir.mkdir(parents=True, exist_ok=True)
-
-    print(f"Run directory : {run_dir}", flush=True)
+    print(f"Run directory   : {run_dir}", flush=True)
     print(f"Output directory: {out_dir}", flush=True)
-    print(f"Expected peaks  : {peaks} bp", flush=True)
+    print(f"Expected peaks  : {peaks if peaks else '(none)'}", flush=True)
 
     data = build_dataset(run_dir)
-
-    print("Plotting figure...", flush=True)
     make_figure(data, peaks, run_dir, out_dir)
-
-    write_lineage(out_dir, run_dir, peaks, data, args)
+    write_lineage(out_dir, run_dir, peaks, data)
     print("Done.", flush=True)
     return 0
 
