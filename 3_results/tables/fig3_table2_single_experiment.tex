@@ -1,0 +1,30 @@
+\begin{table}[H]
+\centering
+\caption{\textbf{Single-experiment validation summary for Figure~\ref{fig:quality}.} The table merges the Figure~3 run-level validation record with the per-end-reason read-length and Q-score summary for the Cutting-resistant E Regular run (\texttt{20250519_1041_MN48328_AYJ384_c3faa658}). End reasons are read directly from POD5 acquisition files; read lengths and per-read mean Q-scores are joined from the basecaller summary/BAM by read identifier.}
+\label{tab:fig3_single_experiment_summary}
+\small
+\setlength{\tabcolsep}{4.0pt}
+\renewcommand{\arraystretch}{1.14}
+\begin{tabular}{>{\raggedright\arraybackslash}p{3.1cm}rrrrrr}
+\toprule
+\multicolumn{7}{l}{\textbf{Run-level validation record}} \\
+\midrule
+\multicolumn{2}{l}{Experiment family} & \multicolumn{5}{l}{Cutting-resistant E} \\
+\multicolumn{2}{l}{Condition} & \multicolumn{5}{l}{Regular} \\
+\multicolumn{2}{l}{Run ID} & \multicolumn{5}{l}{\texttt{20250519_1041_MN48328_AYJ384_c3faa658}} \\
+\multicolumn{2}{l}{POD5 reads} & \multicolumn{5}{r}{380,581} \\
+\multicolumn{2}{l}{Joined to basecaller summary} & \multicolumn{5}{r}{99.72\%} \\
+\multicolumn{2}{l}{Signal-positive reads} & \multicolumn{5}{r}{96.65\%} \\
+\multicolumn{2}{l}{Signal-positive reads in physical window} & \multicolumn{5}{r}{88.7\%} \\
+\multicolumn{2}{l}{Signal-positive mean length} & \multicolumn{5}{r}{4,507 bp} \\
+\midrule
+\textbf{End-reason class} & \textbf{Reads (\textit{n})} & \textbf{Fraction} & \textbf{Mean length (bp)} & \textbf{SD length (bp)} & \textbf{Mean Q} & \textbf{SD Q} \\
+\midrule
+Signal positive & 367,712 & 96.62\% & 4,490.5 & 1,627.6 & 17.62 & 3.63 \\
+Unblock mux change & 11,678 & 3.07\% & 3,982.1 & 13,656.7 & 14.07 & 5.73 \\
+Mux change & 276 & 0.07\% & 201.9 & 493.6 & 16.74 & 5.25 \\
+Signal negative & 899 & 0.24\% & 4,730.8 & 2,954.7 & 13.21 & 3.94 \\
+All focus classes & 380,565 & 100.00\% & 4,472.4 & 2,885.1 & 17.50 & 3.77 \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,0 +1,6 @@
+experiment_family,condition,run_id,pod5_reads,joined_pct,signal_positive_pct,physical_window_pct,signal_positive_mean_bp,end_reason_class,class_reads,class_fraction_pct,mean_length_bp,sd_length_bp,mean_qscore,sd_qscore
+Cutting-resistant E,Regular,20250519_1041_MN48328_AYJ384_c3faa658,"380,581",99.72,96.65,88.7,"4,507",Signal positive,367712,96.6200,4490.5,1627.6,17.621,3.628
+Cutting-resistant E,Regular,20250519_1041_MN48328_AYJ384_c3faa658,"380,581",99.72,96.65,88.7,"4,507",Unblock mux change,11678,3.0700,3982.1,13656.7,14.069,5.732
+Cutting-resistant E,Regular,20250519_1041_MN48328_AYJ384_c3faa658,"380,581",99.72,96.65,88.7,"4,507",Mux change,276,0.0700,201.9,493.6,16.74,5.251
+Cutting-resistant E,Regular,20250519_1041_MN48328_AYJ384_c3faa658,"380,581",99.72,96.65,88.7,"4,507",Signal negative,899,0.2400,4730.8,2954.7,13.212,3.937
+Cutting-resistant E,Regular,20250519_1041_MN48328_AYJ384_c3faa658,"380,581",99.72,96.65,88.7,"4,507",All focus classes,380565,100.0000,4472.4,2885.1,17.501,3.769
