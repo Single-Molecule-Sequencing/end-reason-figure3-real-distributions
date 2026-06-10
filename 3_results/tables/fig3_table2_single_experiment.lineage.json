@@ -1,0 +1,27 @@
+{
+  "artifact_id": "fig3_table2_single_experiment",
+  "generated_at": "2026-06-10T19:39:22+00:00",
+  "script": "2_analysis/scripts/render_table2_single_experiment.py",
+  "inputs": [
+    {
+      "path": "3_results/figures/fig3_summary_stats.csv",
+      "sha256": "f28951da597d2b66464ae834a04522fc3867a711525a705daaea285d5ad0f3b6"
+    },
+    {
+      "path": "1_experiment/run_details.md",
+      "role": "run metadata source"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "3_results/tables/fig3_table2_single_experiment.csv",
+      "sha256": "ac44cf84a85e8e1e93368b735fc2b9df72f33793ed4fa741fdca4ff24e7fa257"
+    },
+    {
+      "path": "3_results/tables/fig3_table2_single_experiment.tex",
+      "sha256": "f511eea23b510f73b6812ab0f24e6dbe7144665224247a64301b07d2af1445a8"
+    }
+  ],
+  "scope": "single Figure 3 experiment only",
+  "run_id": "20250519_1041_MN48328_AYJ384_c3faa658"
+}
