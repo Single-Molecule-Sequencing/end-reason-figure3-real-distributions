@@ -140,10 +140,10 @@ def render_tex(rows: list[dict[str, str]]) -> str:
 \centering
 \caption{{\textbf{{Single-experiment validation summary for Figure~\ref{{fig:quality}}.}} The table merges the Figure~3 run-level validation record with the per-end-reason read-length and Q-score summary for the Cutting-resistant E Regular run (\texttt{{{run_id_tex}}}). End reasons are read directly from POD5 acquisition files; read lengths and per-read mean Q-scores are joined from the basecaller summary/BAM by read identifier.}}
 \label{{tab:fig3_single_experiment_summary}}
-\small
-\setlength{{\tabcolsep}}{{4.0pt}}
-\renewcommand{{\arraystretch}}{{1.14}}
-\begin{{tabular}}{{>{{\raggedright\arraybackslash}}p{{3.1cm}}rrrrrr}}
+\scriptsize
+\setlength{{\tabcolsep}}{{2.2pt}}
+\renewcommand{{\arraystretch}}{{1.10}}
+\begin{{tabular}}{{>{{\raggedright\arraybackslash}}p{{2.75cm}}rrrrrr}}
 \toprule
 \multicolumn{{7}}{{l}}{{\textbf{{Run-level validation record}}}} \\
 \midrule
