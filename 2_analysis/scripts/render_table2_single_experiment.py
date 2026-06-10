@@ -61,6 +61,10 @@ def _fmt_1(value: str) -> str:
     return f"{float(value):,.1f}"
 
 
+def _tex_escape(value: str) -> str:
+    return value.replace("\\", r"\textbackslash{}").replace("_", r"\_")
+
+
 def read_stats() -> list[dict[str, str]]:
     with STATS_CSV.open(newline="", encoding="utf-8") as handle:
         rows = list(csv.DictReader(handle))
@@ -113,6 +117,7 @@ def write_csv(rows: list[dict[str, str]]) -> None:
 
 
 def render_tex(rows: list[dict[str, str]]) -> str:
+    run_id_tex = _tex_escape(RUN["run_id"])
     body_rows = []
     for row in rows:
         label = DISPLAY_LABEL.get(row["category"], row["category"])
@@ -133,7 +138,7 @@ def render_tex(rows: list[dict[str, str]]) -> str:
     body = "\n".join(body_rows)
     return rf"""\begin{{table}}[H]
 \centering
-\caption{{\textbf{{Single-experiment validation summary for Figure~\ref{{fig:quality}}.}} The table merges the Figure~3 run-level validation record with the per-end-reason read-length and Q-score summary for the Cutting-resistant E Regular run (\texttt{{{RUN['run_id']}}}). End reasons are read directly from POD5 acquisition files; read lengths and per-read mean Q-scores are joined from the basecaller summary/BAM by read identifier.}}
+\caption{{\textbf{{Single-experiment validation summary for Figure~\ref{{fig:quality}}.}} The table merges the Figure~3 run-level validation record with the per-end-reason read-length and Q-score summary for the Cutting-resistant E Regular run (\texttt{{{run_id_tex}}}). End reasons are read directly from POD5 acquisition files; read lengths and per-read mean Q-scores are joined from the basecaller summary/BAM by read identifier.}}
 \label{{tab:fig3_single_experiment_summary}}
 \small
 \setlength{{\tabcolsep}}{{4.0pt}}
@@ -144,7 +149,7 @@ def render_tex(rows: list[dict[str, str]]) -> str:
 \midrule
 \multicolumn{{2}}{{l}}{{Experiment family}} & \multicolumn{{5}}{{l}}{{{RUN['experiment_family']}}} \\
 \multicolumn{{2}}{{l}}{{Condition}} & \multicolumn{{5}}{{l}}{{{RUN['condition']}}} \\
-\multicolumn{{2}}{{l}}{{Run ID}} & \multicolumn{{5}}{{l}}{{\texttt{{{RUN['run_id']}}}}} \\
+\multicolumn{{2}}{{l}}{{Run ID}} & \multicolumn{{5}}{{l}}{{\texttt{{{run_id_tex}}}}} \\
 \multicolumn{{2}}{{l}}{{POD5 reads}} & \multicolumn{{5}}{{r}}{{{RUN['pod5_reads']}}} \\
 \multicolumn{{2}}{{l}}{{Joined to basecaller summary}} & \multicolumn{{5}}{{r}}{{{RUN['joined_pct']}\%}} \\
 \multicolumn{{2}}{{l}}{{Signal-positive reads}} & \multicolumn{{5}}{{r}}{{{RUN['signal_positive_pct']}\%}} \\
