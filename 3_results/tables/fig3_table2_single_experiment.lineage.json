@@ -1,6 +1,6 @@
 {
   "artifact_id": "fig3_table2_single_experiment",
-  "generated_at": "2026-06-10T19:39:22+00:00",
+  "generated_at": "2026-06-10T19:44:39+00:00",
   "script": "2_analysis/scripts/render_table2_single_experiment.py",
   "inputs": [
     {
@@ -19,7 +19,7 @@
     },
     {
       "path": "3_results/tables/fig3_table2_single_experiment.tex",
-      "sha256": "f511eea23b510f73b6812ab0f24e6dbe7144665224247a64301b07d2af1445a8"
+      "sha256": "714559eb7060d41c1ec3aeb45f7a327f073b8f3d17c74591fd8109a9910cfe5e"
     }
   ],
   "scope": "single Figure 3 experiment only",
