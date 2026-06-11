@@ -1,0 +1,163 @@
+<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width, initial-scale=1'><title>End-Reason Figure 3: POD5-derived read-length and Q-score distributions by end-reason class · analysis dashboard</title><style>
+:root{--bg:#f6f8fa;--card:#fff;--ink:#1b1f23;--mut:#57606a;--line:#e5e8eb;
+--accent:#4f46e5;--accent2:#7c3aed}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.55 system-ui,-apple-system,Segoe UI,sans-serif;
+color:var(--ink);background:var(--bg)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 1.2rem 4rem}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+code{background:#eef0f3;padding:1px 6px;border-radius:5px;font-size:.86em}
+h1{margin:.1rem 0 .2rem;font-size:1.9rem;letter-spacing:-.02em}
+h2{margin:2.4rem 0 .9rem;font-size:1.18rem;display:flex;align-items:center;gap:.5rem}
+h2 .count{font:600 .72rem/1 system-ui;color:var(--mut);background:#eef0f3;
+padding:3px 8px;border-radius:999px}
+.hero{background:linear-gradient(135deg,#1e1b4b,#4f46e5 55%,#7c3aed);
+color:#fff;border-radius:18px;padding:1.8rem 1.9rem;margin:1.6rem 0 .4rem;
+box-shadow:0 12px 34px -16px rgba(79,70,229,.7)}
+.hero code{background:rgba(255,255,255,.16);color:#fff}
+.hero-top{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+align-items:flex-start}
+.kicker{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;
+opacity:.85;margin-bottom:.2rem}
+.summary{margin:.6rem 0 1rem;font-size:1.02rem;opacity:.96;max-width:64ch}
+.badges{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
+.pill{font:600 .74rem/1 system-ui;padding:5px 11px;border-radius:999px;
+text-transform:capitalize;white-space:nowrap;display:inline-block}
+.tier{font:700 .76rem/1 system-ui;padding:6px 12px;border-radius:999px;
+white-space:nowrap}
+.meta{display:flex;flex-wrap:wrap;gap:.4rem .6rem;align-items:center;
+font-size:.86rem;margin:.2rem 0 1.1rem}
+.metalabel{font:700 .68rem/1 system-ui;text-transform:uppercase;letter-spacing:.06em;
+opacity:.7;margin-left:.7rem}.metalabel:first-child{margin-left:0}
+.chip{background:rgba(255,255,255,.18);padding:3px 9px;border-radius:999px;
+font-size:.8rem}
+.exp{font-size:.8rem}
+.stats{display:flex;gap:.7rem;flex-wrap:wrap;margin:.2rem 0 1rem}
+.stat{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);
+border-radius:12px;padding:.6rem .9rem;min-width:92px}
+.stat .n{font:800 1.5rem/1 system-ui}.stat .l{font-size:.74rem;opacity:.85;
+text-transform:uppercase;letter-spacing:.05em;margin-top:.25rem}
+.tierbar{height:8px;border-radius:999px;background:rgba(255,255,255,.22);
+overflow:hidden;margin:.3rem 0 .7rem}.tierbar span{display:block;height:100%}
+.blockers{font-size:.88rem;opacity:.95}.blockers summary{cursor:pointer;font-weight:600}
+.blockers ul{margin:.4rem 0 0;padding-left:1.1rem}
+.hero .ok{color:#bbf7d0}
+section{background:var(--card);border:1px solid var(--line);border-radius:14px;
+padding:.2rem 1.3rem 1.3rem;margin-top:1rem}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+gap:1rem}.gallery.narrow{grid-template-columns:repeat(auto-fill,minmax(330px,1fr))}
+.card{border:1px solid var(--line);border-radius:12px;overflow:hidden;
+background:#fff;display:flex;flex-direction:column;transition:.15s}
+.card:hover{box-shadow:0 8px 24px -14px rgba(0,0,0,.4);transform:translateY(-2px)}
+.card.fig .thumb{display:block;background:#0f172a;aspect-ratio:16/10;overflow:hidden}
+.card.fig .thumb img{width:100%;height:100%;object-fit:contain;display:block}
+.thumb.noimg{display:flex;align-items:center;justify-content:center;color:#94a3b8;
+font-size:.85rem;background:#f1f5f9;aspect-ratio:16/10}
+.card .body{padding:.8rem .95rem 1rem}
+.row{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem;flex-wrap:wrap}
+.fid{font-weight:700;background:#eef2ff;color:#4338ca}
+.caption{margin:.1rem 0 .5rem;font-size:.9rem;color:#374151}
+.q{margin:.2rem 0 .4rem;font-size:.95rem;font-weight:600}
+.hyp{margin:.2rem 0;font-size:.85rem;color:var(--mut)}
+.prov{font-size:.78rem;color:var(--mut);margin:.2rem 0}
+.signoff{display:inline-block;font:600 .76rem/1 system-ui;padding:4px 9px;
+border-radius:999px;margin:.3rem 0}
+.signoff.ok{background:#dcfce7;color:#15803d}
+.signoff.warn{background:#fef3c7;color:#b45309}
+.links{margin-top:.5rem;font-size:.82rem}
+table.grid{width:100%;border-collapse:collapse;font-size:.88rem}
+table.grid th{text-align:left;color:var(--mut);font-size:.74rem;text-transform:uppercase;
+letter-spacing:.05em;border-bottom:2px solid var(--line);padding:.45rem .5rem}
+table.grid td{padding:.5rem .5rem;border-bottom:1px solid var(--line);vertical-align:top}
+table.grid tr:hover td{background:#fafbfc}
+.num{font-weight:600}.units{color:var(--mut);font-weight:400;font-size:.82em}
+.src{color:var(--mut);font-size:.82rem;word-break:break-all}
+.warn{color:#b45309}.muted{color:#94a3b8}.ok{color:#15803d}
+.badge{display:inline-block;font:600 .68rem/1.4 system-ui;color:#475569;
+background:#eef0f3;border-radius:4px;padding:.1rem .4rem}
+.empty,.hint,.fineprint{color:var(--mut);font-size:.88rem}
+.hint{margin:.2rem 0 .6rem}
+.topnav{position:sticky;top:0;z-index:10;display:flex;flex-wrap:wrap;gap:.2rem;
+margin:.7rem 0 0;padding:.5rem .6rem;background:rgba(255,255,255,.92);
+backdrop-filter:saturate(1.4) blur(6px);border:1px solid var(--line);
+border-radius:12px;box-shadow:0 4px 14px -10px rgba(0,0,0,.35)}
+.topnav a{font:600 .82rem/1 system-ui;color:var(--mut);padding:.4rem .7rem;
+border-radius:8px}
+.topnav a:hover{background:#eef2ff;color:var(--accent);text-decoration:none}
+.kf-band{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+gap:.8rem}
+.kf{background:linear-gradient(135deg,#f5f3ff,#eef2ff);border:1px solid #e0e7ff;
+border-radius:12px;padding:1rem 1.1rem}
+.kf-n{font:800 1.9rem/1 system-ui;color:var(--accent);letter-spacing:-.02em}
+.kf-u{font-size:.78rem;color:var(--mut);text-transform:uppercase;
+letter-spacing:.05em;margin-top:.2rem}
+.kf-l{margin-top:.45rem;font-size:.9rem;color:#374151;font-weight:600}
+.kf-star{color:#b45309}
+.legend{margin:.1rem 0 .4rem;font-size:.84rem}
+.legend summary{cursor:pointer;color:var(--accent);font-weight:600}
+.legend p{margin:.35rem 0 0;color:#374151}
+*:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+footer{margin-top:2.4rem;border-top:1px solid var(--line);padding-top:1rem}
+footer pre{background:#0f172a;color:#e2e8f0;padding:1rem 1.1rem;border-radius:10px;
+overflow:auto;font-size:.84rem}footer pre code{background:none;color:inherit;padding:0}
+.fineprint{margin-top:.8rem}
+@media (max-width:640px){
+.hero{padding:1.3rem 1.2rem}h1{font-size:1.5rem}
+.gallery,.gallery.narrow{grid-template-columns:1fr}
+.kf-n{font-size:1.5rem}
+table.grid{font-size:.8rem}
+}
+@media print{
+.topnav{display:none}body{background:#fff}
+section,.card{break-inside:avoid;box-shadow:none}
+a{color:inherit;text-decoration:none}
+}
+</style></head><body><div class='wrap'><header class="hero">
+  <div class="hero-top">
+    <div>
+      <div class="kicker">Analysis repo · <code>end-reason-figure3-real-distributions</code></div>
+      <h1>End-Reason Figure 3: POD5-derived read-length and Q-score distributions by end-reason class</h1>
+    </div>
+    <div class="badges">
+      <span class='pill' style='color:#6b7280;background:#6b72801a'>exploring</span>
+      <span class="tier" style="color:#6b7280;background:#f3f4f6">tier 0/3 · seed</span>
+    </div>
+  </div>
+  <p class="summary">Read-length KDEs and Q-score KDEs stratified by POD5-derived end_reason across three proof-of-principle cohorts (Eco53KI, RC Eco53KI+PvuII, cutting-resistant E). Validates that signal_positive reads best recapitulate known physical molecule sizes.
+</p>
+  <div class="meta">
+    <span class="metalabel">Topics</span><span class='chip'>end-reason</span><span class='chip'>pod5</span><span class='chip'>real-distributions</span><span class='chip'>read-length</span><span class='chip'>qscore</span>
+    
+    <span class="metalabel">Created</span><span>2026-06-05</span>
+    <span class="metalabel">PI</span><span>Athey Lab</span>
+  </div>
+  <div class="stats">
+    <div class='stat'><div class='n'>1</div><div class='l'>figures</div></div>
+    <div class='stat'><div class='n'>0</div><div class='l'>claims</div></div>
+    <div class='stat'><div class='n'>0</div><div class='l'>explorations</div></div>
+    <div class='stat'><div class='n'>0</div><div class='l'>data sources</div></div>
+  </div>
+  <div class="tierbar"><span style="width:0%;background:#6b7280"></span></div>
+  <details class='blockers'><summary>1 blocker(s) to tier 1</summary><ul><li>tier1: no exploration with an exploration.yaml</li></ul></details>
+</header><nav class='topnav' aria-label='Sections'><a href='#figures'>Figures</a><a href='#provenance'>Provenance</a></nav><section id='figures'><h2>Figures <span class='count'>1</span></h2><div class='gallery'>
+<article class="card fig">
+  <a class='thumb' href='figures/fig3_real_distributions.png' target='_blank' rel='noopener'><img loading='lazy' src='figures/fig3_real_distributions.png' alt='fig3_real_distributions'></a>
+  <div class="body">
+    <div class="row"><code class="fid">fig3_real_distributions</code><span class='pill' style='color:#b45309;background:#b453091a'>draft</span></div>
+    <p class="caption">Read-length and Q-score KDEs stratified by POD5-derived end_reason across three proof-of-principle cohorts.</p>
+    
+    <div class='prov'>↻ <code>adopted: rendered Figure 3 distributions</code> · 2026-06-11 17:59:56</div>
+    <span class='signoff warn'>⚠ awaiting reviewer sign-off</span>
+    <div class='links'><a href='figures/fig3_real_distributions.png' target='_blank'>open figure ↗</a> · <a href='https://github.com/Single-Molecule-Sequencing/end-reason-figure3-real-distributions/blob/main/adopted: rendered Figure 3 distributions' target='_blank'>source ↗</a></div>
+  </div>
+</article></div></section><section id='provenance'><h2>Provenance log <span class='count'>1</span></h2><p class='hint'>Append-only write-ahead log of every artifact-producing action (<code>provenance/runs.jsonl</code>).</p><table class='grid'><thead><tr><th>when</th><th>kind</th><th>command</th><th>outputs</th></tr></thead><tbody><tr><td>2026-06-11 17:59:56</td><td>generic</td><td><code>adopted: rendered Figure 3 distributions</code></td><td class='src'>fig3_real_distributions.png</td></tr></tbody></table></section><footer>
+  <h2>Regenerate</h2>
+  <pre><code>cd end-reason-figure3-real-distributions
+lab-analysis repo-dashboard      # rebuild this page (docs/index.html)
+lab-analysis status              # maturity tier + blockers
+lab-analysis validate            # structural checks</code></pre>
+  <p class="fineprint">
+    Generated by <code>lab-analysis repo-dashboard</code>
+    (2026-06-11T18:02:09Z). Self-contained: no network assets.
+  </p>
+</footer></div></body></html>

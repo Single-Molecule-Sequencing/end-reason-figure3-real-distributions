@@ -1,0 +1,18 @@
+id: fig3_real_distributions
+kind: figure
+path: figures/fig3_real_distributions.png
+caption: Read-length and Q-score KDEs stratified by POD5-derived end_reason across
+  three proof-of-principle cohorts.
+label: fig:fig3_real_distributions
+audiences:
+- preprint
+status: draft
+last_edited: '2026-06-11T17:59:56Z'
+provenance:
+  regenerable: true
+  generated_by: lab-analysis record-run
+  generated_at: '2026-06-11T17:59:56Z'
+  code:
+    script: 'adopted: rendered Figure 3 distributions'
+    commit: 51928420ee7a48f4211c31a32ddac31c2734a743
+  env_hash: 9c00029d4cd93f1e

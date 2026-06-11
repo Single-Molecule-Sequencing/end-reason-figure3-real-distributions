@@ -1,5 +1,10 @@
 # End-Reason Figure 3 — POD5-Derived Read-Length and Q-Score Distributions
 
+<!-- LAB:DASHBOARD-BADGE BEGIN -->
+📊 **[Live dashboard](https://single-molecule-sequencing.github.io/end-reason-figure3-real-distributions/)**
+<!-- LAB:DASHBOARD-BADGE END -->
+
+
 **Paper:** End-reason filtering in single-molecule sequencing of native DNA (Oxford Nanopore)  
 **Figure:** Figure 3  
 **What this shows:** Read-length kernel density estimates (KDEs) and Q-score KDEs,
