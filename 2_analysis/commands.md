@@ -1,110 +1,38 @@
-# Commands — How to Run the Analysis
+# Commands — Exact Reproducibility Runs
 
-Run these in order to reproduce the figure from scratch.
-
-> ⚠️ **HPC required.** The raw POD5 and BAM inputs live on Turbo
-> and are only accessible from a Great Lakes compute node. Run from a GL allocation:
-> `srun --partition=standard --cpus-per-task=4 --mem=32G --pty bash`
-
----
-
-## 0. Prerequisites
+## Environment
 
 ```bash
-# SSH to Great Lakes
-ssh <uniqname>@greatlakes.arc-ts.umich.edu
-
-# Get an interactive allocation (if not already in one)
-srun --partition=standard --cpus-per-task=4 --mem=32G --pty bash
-
-# Activate the lab environment
-conda activate atheylab
+conda env create -f 2_analysis/scripts/environment.yaml -n end-reason-fig3 || true
+conda activate end-reason-fig3
+python -c "import pandas, numpy, matplotlib, seaborn; print('python deps OK')"
 ```
 
-Choose the right import check for your script (see Step 1):
+## A) Regenerate figure from deposited table (no HPC)
 
 ```bash
-# POD5 script (dorado < v1.3.1)
-python -c "import pod5, pysam, pandas, numpy, matplotlib, seaborn; print('All imports OK')"
-
-# BAM er:Z: script (dorado v1.3.1+)
-python -c "import pysam, pandas, numpy, matplotlib, seaborn; print('All imports OK')"
+python 2_analysis/scripts/fig3_from_deposited_table.py \
+  --table 3_results/tables/fig3_table2_single_experiment.csv \
+  --out-prefix 3_results/figures/fig3_real_distributions_from_deposited_table
 ```
 
----
-
-## 1. Run the figure script
-
-Choose the script that matches the dorado version used to basecall the experiment.
-
-### Option A — dorado < v1.3.1 (end reasons from POD5)
-
-Reads end reasons from POD5 acquisition files. Requires `pod5/` and `bam_pass/`
-subdirectories inside `--run-dir`.
+## B) Re-render Table 2 artifacts from summary stats
 
 ```bash
-cd /path/to/end-reason-figure3-real-distributions
-
-python 2_analysis/scripts/fig3_real_distributions_pod5_end_reasons.py \
-    --run-dir /nfs/turbo/umms-atheylab/gregfar/SMS/SMS_POP_data/Single_Molecule_Seqeuncing_Cutting_Res_E/Regular/20250519_1041_MN48328_AYJ384_c3faa658 \
-    --out-dir 3_results/figures/raw_output \
-    --peak-bp 4800   # adjust to expected fragment size(s)
+python 2_analysis/scripts/render_table2_single_experiment.py
 ```
 
-### Option B — dorado v1.3.1+ (end reasons from BAM er:Z: tag)
-
-Reads end reasons directly from the BAM `er:Z:` aux tag. Takes a single BAM
-file as input — no run directory structure or POD5 files needed.
-
-> Note: the `er:Z:` tag was first written by dorado in **v1.3.1** (DOR-1307
-> backport, 2026-01-12). It is absent in v1.3.0 and earlier.
+## C) Recompute summary stats from raw data (HPC required)
 
 ```bash
-cd /path/to/end-reason-figure3-real-distributions
+# POD5 + custom BAM join
+python 2_analysis/scripts/fig3_real_distributions_pod5_er_custom_bam.py \
+  --pod5-dir /nfs/turbo/umms-atheylab/gregfar/SMS/SMS_POP_data/Single_Molecule_Seqeuncing_Cutting_Res_E/Regular/20250519_1041_MN48328_AYJ384_c3faa658/pod5 \
+  --bam /nfs/turbo/umms-atheylab/hrli/Code/dorado-run/Output/20250519_1041_MN48328_AYJ384_c3faa658_sup_v5.2.0_trim1_10.bam \
+  --out-dir 3_results/figures
 
+# or BAM er:Z: path (dorado v1.3.1+)
 python 2_analysis/scripts/fig3_real_distributions_bam_er_tag.py \
-    --bam /path/to/basecalled.bam \
-    --out-dir 3_results/figures/raw_output \
-    --peak-bp 4800   # adjust to expected fragment size(s)
+  --bam /path/to/basecalled_v1.3.1_or_later.bam \
+  --out-dir 3_results/figures
 ```
-
-Both scripts produce identical output:
-**`3_results/figures/raw_output/fig3_real_distributions.{pdf,png}`** and `lineage.json`  
-**Runtime:** ~5–15 minutes depending on BAM size and allocation CPUs
-
----
-
-## 2. Record the provenance run
-
-After executing, stamp the run so this figure has a traceable lineage:
-
-```bash
-lab-analysis record-run \
-    --figure fig3_real_distributions \
-    --command "python 2_analysis/scripts/fig3_real_distributions_bam_er_tag.py" \
-    --output 3_results/figures/Figure_3_final.pdf \
-    --output 3_results/figures/Figure_3_final.png
-```
-
----
-
-## 3. (Manual) Illustrator refinements
-
-Open `3_results/figures/raw_output/` in Adobe Illustrator, apply final
-typographic/layout refinements, and export as:
-- `3_results/figures/Figure_3_final.pdf`
-- `3_results/figures/Figure_3_final.svg`
-- `3_results/figures/Figure_3_final@4x.png`
-
-Commit the exported files.
-
----
-
-## 4. Verify the happy path
-
-```bash
-# From repo root
-lab-analysis verify-happy-path
-```
-
-See [`HAPPY_PATH.md`](../HAPPY_PATH.md) for the full end-to-end narrative.

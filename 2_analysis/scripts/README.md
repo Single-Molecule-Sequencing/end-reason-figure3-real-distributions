@@ -1,17 +1,8 @@
 # scripts/
 
-This directory contains the figure-generation code for Figure 3.
-
-| File | Description |
-|---|---|
-| `fig3_real_distributions.py` | Main figure script — reads POD5 end reasons, joins sequencing_summary, plots KDE panels |
-
-## Running
-
-See [`../commands.md`](../commands.md) for the exact commands to run this script.
-
-## Source
-
-This script is ported from `figures_src/fig3_real_distributions.py` in the
-`end-reason-paper` / `end-reason-fresh` repo. Any updates to the upstream script
-should be reflected here.
+- `fig3_from_deposited_table.py`: deterministic figure regeneration from deposited table CSV
+- `render_table2_single_experiment.py`: regenerate Table 2 CSV/TEX/lineage from summary stats
+- `fig3_real_distributions_pod5_er_custom_bam.py`: POD5 end reasons + BAM metrics
+- `fig3_real_distributions_bam_er_tag.py`: BAM `er:Z:` + `qs` based workflow
+- `fig3_real_distributions_pod5_end_reasons.py`: legacy/deprecated POD5+BAM folder layout script
+- `environment.yaml`: conda environment spec

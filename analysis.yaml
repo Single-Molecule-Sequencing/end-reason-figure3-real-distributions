@@ -1,22 +1,21 @@
 schema_version: 1
 id: end-reason-figure3-real-distributions
-title: 'End-Reason Figure 3: POD5-derived read-length and Q-score distributions by
-  end-reason class'
-status: exploring
-maturity_tier: 2
+title: 'End-Reason Figure 3: POD5-derived read-length and Q-score distributions by end-reason class'
+status: ready
+maturity_tier: 3
 pi: Athey Lab
-experiments: []
+experiments:
+  - 20250519_1041_MN48328_AYJ384_c3faa658
 topics:
-- end-reason
-- pod5
-- real-distributions
-- read-length
-- qscore
-summary: 'Read-length KDEs and Q-score KDEs stratified by POD5-derived end_reason
-  across three proof-of-principle cohorts (Eco53KI, RC Eco53KI+PvuII, cutting-resistant
-  E). Validates that signal_positive reads best recapitulate known physical molecule
-  sizes.
-
-  '
+  - end-reason
+  - pod5
+  - real-distributions
+  - read-length
+  - qscore
+  - deposited-table-reproducibility
+summary: >-
+  Source-of-record Figure 3 single-experiment artifacts for end-reason filtering.
+  Includes deposited table outputs (CSV/TEX/lineage) and a deterministic plotting
+  script that regenerates figure assets directly from deposited table content.
 created: '2026-06-05'
 harvested_by: []

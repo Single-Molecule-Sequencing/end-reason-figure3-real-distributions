@@ -1,14 +1,10 @@
 # Basecalled Data
 
-Pointer to the `sequencing_summary` file (and BAM output) for this run on Turbo.
-
-This file is produced by the dorado command in [`../dorado_commands.md`](../dorado_commands.md).
-
-> The figure script reads end reasons directly from POD5 files and joins read
-> lengths / Q-scores from `sequencing_summary` by `read_id`. Both inputs are
-> required to reproduce the figure.
+Basecalled inputs used for Figure 3 regeneration workflows.
 
 | File | Path |
 |---|---|
-| `sequencing_summary.txt` | [TODO] |
-| Basecalled BAM | [TODO] |
+| BAM (known derivative used in downstream analyses) | `/nfs/turbo/umms-atheylab/hrli/Code/dorado-run/Output/20250519_1041_MN48328_AYJ384_c3faa658_sup_v5.2.0_trim1_10.bam` |
+| Sequencing summaries | `/nfs/turbo/umms-atheylab/gregfar/SMS/SMS_POP_data/Single_Molecule_Seqeuncing_Cutting_Res_E/Regular/20250519_1041_MN48328_AYJ384_c3faa658/` |
+
+Use with scripts in `2_analysis/scripts/`.

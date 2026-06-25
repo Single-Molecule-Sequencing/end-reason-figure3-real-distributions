@@ -1,25 +1,8 @@
 # Figures
 
-This directory contains the **polished figure files** as they will appear in
-the paper.
+This folder contains committed figure assets and deterministic regeneration outputs.
 
-## File naming convention
-
-```
-Figure_3_draft_YYYY-MM-DD.<ext>   ← near-complete draft, date-stamped
-Figure_3_final.<ext>               ← final version (added when ready for submission)
-```
-
-## Formats
-
-| Format | Use |
-|---|---|
-| `.pdf` | Print / journal submission |
-| `.svg` | Editable vector (Illustrator source) |
-| `@4x.png` | High-res raster (web, slides) |
-| `@4x.jpg` | Compressed high-res (web) |
-
-## Current files
-
-_No polished draft yet — run `2_analysis/scripts/fig3_real_distributions.py`
-and apply Illustrator refinements._
+- `fig3_real_distributions.{png,pdf,svg}`: primary figure assets
+- `fig3_summary_stats.csv`: summary table used to build Table 2
+- `fig3_real_distributions_from_deposited_table.{png,pdf,svg}`: deterministic figure rebuilt from deposited table CSV
+- `fig3_real_distributions_from_deposited_table.lineage.json`: provenance for deposited-table figure regeneration

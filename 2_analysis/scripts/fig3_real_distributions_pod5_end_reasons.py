@@ -23,7 +23,7 @@ Produces a 2×2 figure:
   bottom-right: Q-score stratified by end-reason (4 colored KDEs)
 
 Usage:
-    python fig3_real_distributions.py \\
+    python fig3_real_distributions_pod5_end_reasons.py \\
         --run-dir /nfs/turbo/.../20250519_1041_MN48328_AYJ384_c3faa658 \\
         --out-dir ../../3_results/figures/raw_output \\
         --peak-bp 5500   # optional: expected physical fragment peak(s) in bp
@@ -343,7 +343,7 @@ def write_lineage(out_dir: Path, run_dir: Path, peaks: list[int],
         "figure_id": "fig3_real_distributions",
         "paper_id": "end-reason",
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "script": "2_analysis/scripts/fig3_real_distributions.py",
+        "script": "2_analysis/scripts/fig3_real_distributions_pod5_end_reasons.py",
         "script_sha256": _sha256(Path(__file__)),
         "host": socket.gethostname(),
         "params": {

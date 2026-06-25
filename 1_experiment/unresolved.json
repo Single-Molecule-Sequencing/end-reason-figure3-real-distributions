@@ -1,0 +1,22 @@
+{
+  "run_id": "20250519_1041_MN48328_AYJ384_c3faa658",
+  "generated_at": "2026-06-25T20:45:18Z",
+  "missing": [
+    {
+      "field": "exact_dorado_command",
+      "reason": "Not captured in deposited artifacts or current repository history."
+    },
+    {
+      "field": "dorado_version_used_for_original_run",
+      "reason": "Only a downstream BAM path is available; version metadata is absent."
+    },
+    {
+      "field": "minknow_version",
+      "reason": "Run metadata file does not include MinKNOW version."
+    },
+    {
+      "field": "library_kit",
+      "reason": "Run metadata file does not include kit identifier."
+    }
+  ]
+}

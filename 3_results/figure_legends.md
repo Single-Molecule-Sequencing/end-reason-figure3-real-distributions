@@ -1,8 +1,5 @@
 # Figure 3 Legend
 
-<!-- TODO: Finalize the figure legend text for submission. The draft below
-     reflects the fig.quality atom caption + legend — update once co-authors
-     have reviewed the polished figure. -->
 
 **Figure 3. POD5-derived read-length and Q-score distributions by end-reason class.**
 Read-length kernel density estimates (KDEs) and Q-score KDEs stratified by
@@ -18,12 +15,3 @@ acquisition files; read lengths and Q-scores are joined from the basecaller
 known physical molecule sizes; non-`signal_positive`
 reads do not, and quality-score thresholds alone do not remove the physically
 discordant populations.
-
----
-
-## Notes for revision
-
-- [ ] Confirm expected fragment size(s) (bp) for the Cutting-resistant E sample
-- [ ] Confirm Q10 as the reference threshold
-- [ ] Add panel labels (A, B, C) if the journal requires them
-- [ ] Verify that all end-reason class names match the canonical taxonomy

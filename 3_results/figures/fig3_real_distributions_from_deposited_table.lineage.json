@@ -1,0 +1,26 @@
+{
+  "artifact_id": "fig3_real_distributions_from_deposited_table",
+  "generated_at": "2026-06-25T20:49:12+00:00",
+  "script": "2_analysis/scripts/fig3_from_deposited_table.py",
+  "inputs": [
+    {
+      "path": "3_results/tables/fig3_table2_single_experiment.csv",
+      "sha256": "ac44cf84a85e8e1e93368b735fc2b9df72f33793ed4fa741fdca4ff24e7fa257"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "3_results/figures/fig3_real_distributions_from_deposited_table.png",
+      "sha256": "9ed6e74479b5169ae9a9596484ceb66f2dc1c44924a398c0a5afbcba5acf55d5"
+    },
+    {
+      "path": "3_results/figures/fig3_real_distributions_from_deposited_table.pdf",
+      "sha256": "8959bffafd82fbebf62553efff8dcd324ee6a24549431583664bf3b8fc649b6b"
+    },
+    {
+      "path": "3_results/figures/fig3_real_distributions_from_deposited_table.svg",
+      "sha256": "51d3bb10211a0220a9f7a9a9fb38590d7625e7cc51f6664fed4c15160f11447f"
+    }
+  ],
+  "scope": "deposited-table reproducibility figure"
+}
