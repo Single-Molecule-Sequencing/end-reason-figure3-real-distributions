@@ -1,5 +1,8 @@
 # End-Reason Figure 3 — POD5-Derived Read-Length and Q-Score Distributions
 
+> 📄 Companion repository for the **End Reason** Data Descriptor — canonical manuscript: [Single-Molecule-Sequencing/end_reason_6_5_26](https://github.com/Single-Molecule-Sequencing/end_reason_6_5_26).
+
+
 <!-- LAB:DASHBOARD-BADGE BEGIN -->
 📊 **[Live dashboard](https://single-molecule-sequencing.github.io/end-reason-figure3-real-distributions/)**
 <!-- LAB:DASHBOARD-BADGE END -->
