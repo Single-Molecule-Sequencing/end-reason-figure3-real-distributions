@@ -1,0 +1,1 @@
+{"ok": true, "mode": "executed", "exit_code": 0, "duration_s": 1.211, "verified_at": "2026-07-09T05:08:40Z", "detail": "`python 2_analysis/scripts/fig3_from_deposited_table.py --table 3_results/tables/fig3_table2_single_experiment.csv --out-prefix 3_results/figures/fig3_real_distributions_from_deposited_table` exited 0"}
