@@ -4,7 +4,7 @@
 
 
 <!-- LAB:DASHBOARD-BADGE BEGIN -->
-📊 **[Live dashboard](https://single-molecule-sequencing.github.io/end-reason-figure3-real-distributions/)**
+📊 **[Live dashboard](https://rdlu0053.tail46dbe4.ts.net:8464/artifacts/mirror/end-reason-figure3-real-distributions/index.html)**
 <!-- LAB:DASHBOARD-BADGE END -->
 
 **Paper:** End-reason filtering in single-molecule sequencing of native DNA (Oxford Nanopore)  
